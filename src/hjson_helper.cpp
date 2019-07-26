@@ -1,0 +1,153 @@
+#include "types.h"
+#include "hjson_helper.h"
+#include "vlog.h"
+#include <assert.h>
+
+bool has_member(const Hjson::Value& doc, const std::string& objName)
+{
+  auto v = doc[objName];
+  if (!v.defined()) {
+    return false;
+  }
+  return true;
+}
+
+
+bool check_property_string(const char *parser, const Hjson::Value &o, const char *prop)
+{
+  if (!has_member(o, prop)) {
+    vlog_error(VCAT_HAL, "%s configuration needs to have a '%s' property\n", parser, prop);
+    return false;
+  }
+  if (o[prop].type() != Hjson::Value::STRING) {
+    vlog_error(VCAT_HAL, "%s configuration, '%s' needs to be a string\n", parser, prop);
+    return false;
+  }
+  return true;
+}
+
+bool check_property_bool(const char *parser, const Hjson::Value &o, const char *prop)
+{
+  if (!has_member(o, prop)) {
+    vlog_error(VCAT_HAL, "%s configuration file needs to have a '%s' property\n", parser, prop);
+    return false;
+  }
+  if (o[prop].type() != Hjson::Value::BOOL) {
+    vlog_error(VCAT_HAL, "%s configuration file, '%s' needs to be a Bool\n", parser, prop);
+    return false;
+  }
+  return true;
+}
+
+bool check_property_obj(const char *parser, const Hjson::Value &o, const char *prop)
+{
+  if (!has_member(o, prop)) {
+    vlog_error(VCAT_HAL, "Logger configuration file needs to have a '%s' property\n", prop);
+    return false;
+  }
+  if (o[prop].type() != Hjson::Value::MAP) {
+    vlog_error(VCAT_HAL, "Logger configuration file, '%s' needs to be an object\n", prop);
+    return false;
+  }
+  return true;
+}
+
+void get_property_int(const Hjson::Value& o, int &val)
+{
+  if (o.type() == Hjson::Value::STRING) {
+    std::string v = o;
+    val = std::atoi(o);
+  }
+  else if (o.type() == Hjson::Value::DOUBLE) {
+    val = int(o);
+  }
+}
+
+void get_property_float(const Hjson::Value& o, float &val)
+{
+  if (o.type() == Hjson::Value::STRING) {
+    std::string v = o;
+    val = std::atof(o);
+  } else if (o.type() == Hjson::Value::DOUBLE) {
+    val = o;
+  }
+}
+
+void get_property_bool(const Hjson::Value& o, bool &val)
+{
+  if (o.type() == Hjson::Value::STRING) {
+    val = (o == std::string("true") );
+  } else if (o.type() == Hjson::Value::BOOL ){
+    val = o.operator bool();
+  } else if (o.type() == Hjson::Value::DOUBLE) {
+    int v = int(o);
+    val = bool(v);
+  }
+}
+
+bool get_member_int(const Hjson::Value& doc, const std::string& objName, int &val)
+{
+  auto o = doc[objName];
+  if (!o.defined()) {
+    return false;
+  }
+
+  if (o.type() == Hjson::Value::STRING) {
+    val = std::atoi(o);
+    return true;
+  } else if (o.type() == Hjson::Value::DOUBLE) {
+    val = int(o);
+    return true;
+  }
+  return false;
+}
+
+bool get_member_float(const Hjson::Value& doc, const std::string& objName, float &val)
+{
+  auto o = doc[objName];
+  if (!o.defined()) {
+    return false;
+  }
+
+  if (o.type() == Hjson::Value::STRING) {
+    val = std::atof(o);
+    return true;
+  } else if (o.type() == Hjson::Value::DOUBLE) {
+    val = o;
+    return true;
+  }
+  return false;
+}
+
+bool get_member_bool(const Hjson::Value& doc, const std::string& objName, bool &val)
+{
+  auto o = doc[objName];
+  if (!o.defined()) {
+    return false;
+  }
+
+  if (o.type() == Hjson::Value::STRING) {
+    val = o == std::string("true");
+    return true;
+  } else if (o.type() == Hjson::Value::BOOL) {
+    val = o.operator bool();
+    return true;
+  }
+  return false;
+}
+
+bool get_member_string(const Hjson::Value& doc, const std::string& objName, std::string& val)
+{
+
+  auto o = doc[objName];
+  if (!o.defined()) {
+    return false;
+  }
+
+  if (o.type() == Hjson::Value::STRING) {
+    val = o.operator const std::string();
+    return true;
+  }
+  return false;
+}
+

@@ -1,0 +1,8 @@
+bazel-*
+.vscode/
+logs/
+build/
+*.mexa64
+*.user
+data/
+*.pb
