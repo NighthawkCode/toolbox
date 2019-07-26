@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "file_utils.h"
 
-std::string read_file_into_string( const char *filename )
+std::string ReadFileIntoString( const char *filename )
 {
   FILE* f;
   f = fopen(filename, "r");
