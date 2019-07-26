@@ -3,6 +3,17 @@
 #include "vlog.h"
 #include <assert.h>
 
+bool load_json(Hjson::Value &json, const std::string& text)
+{
+  try {
+    json = Hjson::Unmarshal( text.c_str() );
+    return true;
+  } catch (...) {
+    vlog_error(VCAT_GENERAL, "Could not parse json configuration file %s", text.c_str() );
+    return false;
+  }
+}
+
 bool has_member(const Hjson::Value& doc, const std::string& objName)
 {
   auto v = doc[objName];
@@ -16,11 +27,11 @@ bool has_member(const Hjson::Value& doc, const std::string& objName)
 bool check_property_string(const char *parser, const Hjson::Value &o, const char *prop)
 {
   if (!has_member(o, prop)) {
-    vlog_error(VCAT_HAL, "%s configuration needs to have a '%s' property\n", parser, prop);
+    vlog_error(VCAT_GENERAL, "%s configuration needs to have a '%s' property\n", parser, prop);
     return false;
   }
   if (o[prop].type() != Hjson::Value::STRING) {
-    vlog_error(VCAT_HAL, "%s configuration, '%s' needs to be a string\n", parser, prop);
+    vlog_error(VCAT_GENERAL, "%s configuration, '%s' needs to be a string\n", parser, prop);
     return false;
   }
   return true;
@@ -29,11 +40,11 @@ bool check_property_string(const char *parser, const Hjson::Value &o, const char
 bool check_property_bool(const char *parser, const Hjson::Value &o, const char *prop)
 {
   if (!has_member(o, prop)) {
-    vlog_error(VCAT_HAL, "%s configuration file needs to have a '%s' property\n", parser, prop);
+    vlog_error(VCAT_GENERAL, "%s configuration file needs to have a '%s' property\n", parser, prop);
     return false;
   }
   if (o[prop].type() != Hjson::Value::BOOL) {
-    vlog_error(VCAT_HAL, "%s configuration file, '%s' needs to be a Bool\n", parser, prop);
+    vlog_error(VCAT_GENERAL, "%s configuration file, '%s' needs to be a Bool\n", parser, prop);
     return false;
   }
   return true;
@@ -42,11 +53,11 @@ bool check_property_bool(const char *parser, const Hjson::Value &o, const char *
 bool check_property_obj(const char *parser, const Hjson::Value &o, const char *prop)
 {
   if (!has_member(o, prop)) {
-    vlog_error(VCAT_HAL, "Logger configuration file needs to have a '%s' property\n", prop);
+    vlog_error(VCAT_GENERAL, "Logger configuration file needs to have a '%s' property\n", prop);
     return false;
   }
   if (o[prop].type() != Hjson::Value::MAP) {
-    vlog_error(VCAT_HAL, "Logger configuration file, '%s' needs to be an object\n", prop);
+    vlog_error(VCAT_GENERAL, "Logger configuration file, '%s' needs to be an object\n", prop);
     return false;
   }
   return true;
@@ -102,7 +113,41 @@ bool get_member_int(const Hjson::Value& doc, const std::string& objName, int &va
   return false;
 }
 
+bool get_member_uint(const Hjson::Value& doc, const std::string& objName, unsigned int &val)
+{
+  auto o = doc[objName];
+  if (!o.defined()) {
+    return false;
+  }
+
+  if (o.type() == Hjson::Value::STRING) {
+    val = std::atoi(o);
+    return true;
+  } else if (o.type() == Hjson::Value::DOUBLE) {
+    val = int(o);
+    return true;
+  }
+  return false;
+}
+
 bool get_member_float(const Hjson::Value& doc, const std::string& objName, float &val)
+{
+  auto o = doc[objName];
+  if (!o.defined()) {
+    return false;
+  }
+
+  if (o.type() == Hjson::Value::STRING) {
+    val = std::atof(o);
+    return true;
+  } else if (o.type() == Hjson::Value::DOUBLE) {
+    val = o;
+    return true;
+  }
+  return false;
+}
+
+bool get_member_double(const Hjson::Value& doc, const std::string& objName, double &val)
 {
   auto o = doc[objName];
   if (!o.defined()) {
