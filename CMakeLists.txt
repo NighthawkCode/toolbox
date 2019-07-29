@@ -17,3 +17,5 @@ add_library( toolbox SHARED src/file_utils.cpp src/hjson_helper )
 target_include_directories( toolbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/toolbox )
 target_include_directories( toolbox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include )
 target_link_libraries( toolbox PUBLIC hjson vlog )
+
+install(TARGETS toolbox DESTINATION lib)
