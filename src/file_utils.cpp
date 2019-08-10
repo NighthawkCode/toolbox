@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "file_utils.h"
+#include <sys/statvfs.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 std::string ReadFileIntoString( const char *filename )
 {
@@ -23,4 +28,32 @@ std::string ReadFileIntoString( const char *filename )
   }
   fclose(f);
   return buf;
+}
+
+bool file_exists( const char* filepath )
+{
+  struct stat status;
+  if( stat( filepath, &status ) == 0 && S_ISREG( status.st_mode ) ) {
+    return true;
+  }
+  return false;
+}
+
+bool dir_exists( const char* dirpath )
+{
+  struct stat status;
+  if( stat( dirpath, &status ) == 0 && S_ISDIR( status.st_mode ) ) {
+    return true;
+  }
+  return false;
+}
+
+std::string GetHomeFolder()
+{
+  const char *home_dir = nullptr;
+  home_dir = getenv("HOME");
+  if (home_dir == nullptr) {
+    home_dir = getpwuid(getuid())->pw_dir;
+  }
+  return std::string(home_dir);
 }
