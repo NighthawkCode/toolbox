@@ -13,6 +13,8 @@ fetch_dependency( vlog "https://git.martian.ag/open-source/vlog.cbuf" "master" )
 
 find_package( hjson REQUIRED )
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+
 add_library( toolbox SHARED src/file_utils.cpp src/hjson_helper src/unix_helper)
 target_include_directories( toolbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/toolbox )
 target_include_directories( toolbox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include )
