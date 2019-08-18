@@ -84,8 +84,12 @@ void get_property_float(const Hjson::Value& o, float &val)
   }
 }
 
-void get_property_bool(const Hjson::Value& o, bool &val)
+void get_property_bool(const Hjson::Value& o, bool &val, bool default_value )
 {
+  if (!o.defined()) {
+    val = default_value;
+    return;
+  }
   if (o.type() == Hjson::Value::STRING) {
     val = (o == std::string("true") );
   } else if (o.type() == Hjson::Value::BOOL ){

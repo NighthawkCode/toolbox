@@ -5,9 +5,10 @@ bool load_json(Hjson::Value &json, const std::string& text);
 bool check_property_string( const char *parser, const Hjson::Value &o, const char *prop );
 bool check_property_obj( const char *parser, const Hjson::Value &o, const char *prop );
 bool check_property_bool( const char *parser, const Hjson::Value &o, const char *prop );
+
 void get_property_int(const Hjson::Value& o, int &val);
 void get_property_float(const Hjson::Value& o, float &val);
-void get_property_bool(const Hjson::Value& o, bool &val);
+void get_property_bool( const Hjson::Value& o, bool &val, bool default_value = false );
 bool get_member_int(const Hjson::Value& doc, const std::string& objName, int &val);
 bool get_member_uint(const Hjson::Value& doc, const std::string& objName, unsigned int &val);
 bool get_member_float(const Hjson::Value& doc, const std::string& objName, float &val);
