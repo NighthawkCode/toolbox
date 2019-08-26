@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <dirent.h>
 
 std::string ReadFileIntoString( const char *filename )
 {
@@ -56,4 +57,36 @@ std::string GetHomeFolder()
     home_dir = getpwuid(getuid())->pw_dir;
   }
   return std::string(home_dir);
+}
+
+std::vector<std::string> GetFilesInDirectory(const std::string& dir)
+{
+  std::vector<std::string> vec;
+
+  DIR *dirp = opendir(dir.c_str());
+  if (dirp == nullptr) return vec;
+
+  struct dirent *dp = readdir(dirp);
+
+  while(dp != nullptr) {
+    vec.push_back(std::string(dp->d_name));
+    dp = readdir(dirp);
+  }
+  closedir(dirp);
+
+  return vec;
+}
+
+std::string GetFileExtension(const std::string& FileName)
+{
+    if(FileName.find_last_of(".") != std::string::npos)
+        return FileName.substr(FileName.find_last_of(".")+1);
+    return "";
+}
+
+std::string GetFilename(const std::string& WholeFile)
+{
+    if(WholeFile.find_last_of("/") != std::string::npos)
+        return WholeFile.substr(WholeFile.find_last_of("/")+1);
+    return WholeFile;
 }
