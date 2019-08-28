@@ -365,7 +365,7 @@ bool get_value_int(const Hjson::Value& o, int64_t &val)
   return false;
 }
 
-bool get_value_int(const Hjson::Value& o, uint8_t &val)
+bool get_value_uint(const Hjson::Value& o, uint8_t &val)
 {
   if (!o.defined()) {
     return false;
@@ -381,7 +381,7 @@ bool get_value_int(const Hjson::Value& o, uint8_t &val)
   return false;
 }
 
-bool get_value_int(const Hjson::Value& o, uint16_t &val)
+bool get_value_uint(const Hjson::Value& o, uint16_t &val)
 {
   if (!o.defined()) {
     return false;
@@ -397,7 +397,7 @@ bool get_value_int(const Hjson::Value& o, uint16_t &val)
   return false;
 }
 
-bool get_value_int(const Hjson::Value& o, uint32_t &val)
+bool get_value_uint(const Hjson::Value& o, uint32_t &val)
 {
   if (!o.defined()) {
     return false;
@@ -413,7 +413,7 @@ bool get_value_int(const Hjson::Value& o, uint32_t &val)
   return false;
 }
 
-bool get_value_int(const Hjson::Value& o, uint64_t &val)
+bool get_value_uint(const Hjson::Value& o, uint64_t &val)
 {
   if (!o.defined()) {
     return false;
