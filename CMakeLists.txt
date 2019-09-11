@@ -15,9 +15,10 @@ find_package( hjson REQUIRED )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 
-add_library( toolbox SHARED src/file_utils.cpp src/hjson_helper src/unix_helper src/stb_image_write)
+add_library( toolbox SHARED src/file_utils.cpp src/hjson_helper src/unix_helper src/stb_image_write )
+set_target_properties(toolbox PROPERTIES CXX_STANDARD 17)
 target_include_directories( toolbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/toolbox )
 target_include_directories( toolbox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include )
-target_link_libraries( toolbox PUBLIC hjson vlog )
+target_link_libraries( toolbox PUBLIC hjson vlog stdc++fs)
 
 install(TARGETS toolbox DESTINATION lib)

@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <dirent.h>
+#include <experimental/filesystem> //#include <filesystem>
 
 std::string ReadFileIntoString( const char *filename )
 {
@@ -89,4 +90,13 @@ std::string GetFilename(const std::string& WholeFile)
     if(WholeFile.find_last_of("/") != std::string::npos)
         return WholeFile.substr(WholeFile.find_last_of("/")+1);
     return WholeFile;
+}
+
+bool MaybeCreateDirectory(const std::string& dir) {
+  if( !std::experimental::filesystem::exists( dir.c_str() ) ) {
+    if( !std::experimental::filesystem::create_directories( dir.c_str() ) ) {
+      return false;
+    }
+  }
+  return true;
 }
