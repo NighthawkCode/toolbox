@@ -7,6 +7,7 @@
  * and avoid the whole try catch
  */
 
+inline
 bool get_arg_int(cxxopts::ParseResult& parse, const std::string& name, int &val)
 {
   try {
@@ -17,6 +18,7 @@ bool get_arg_int(cxxopts::ParseResult& parse, const std::string& name, int &val)
   }
 }
 
+inline
 bool get_arg_bool(cxxopts::ParseResult& parse, const std::string& name, bool &val)
 {
   try {
@@ -27,6 +29,7 @@ bool get_arg_bool(cxxopts::ParseResult& parse, const std::string& name, bool &va
   }
 }
 
+inline
 bool get_arg_string(cxxopts::ParseResult& parse, const std::string& name, std::string &val)
 {
   try {
