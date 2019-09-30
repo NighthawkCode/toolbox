@@ -13,6 +13,3 @@ std::string GetFilename(const std::string& WholeFile);
 // existence of directory.
 bool MaybeCreateDirectory(const std::string& dir);
 
-// this function will split the input strings based on the separator
-std::vector<std::string> split(const std::string& s, char seperator);
-
