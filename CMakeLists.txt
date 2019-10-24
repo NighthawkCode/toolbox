@@ -25,4 +25,8 @@ target_include_directories( toolbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/
 target_include_directories( toolbox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include )
 target_link_libraries( toolbox PUBLIC hjson vlog stdc++fs)
 
+set(toolbox_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "toolbox source path" FORCE)
+
+set(toolbox_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE STRING "toolbox lib path" FORCE)
+
 install(TARGETS toolbox DESTINATION lib)
