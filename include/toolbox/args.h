@@ -212,7 +212,7 @@ class ArgParser {
     for (int i = 0; i < names.size(); i++) {
       if (i > 0)
         res += ",";
-      res += names[0];
+      res += names[i];
     }
     return res;
   }
