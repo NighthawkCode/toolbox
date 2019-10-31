@@ -211,7 +211,7 @@ class ArgParser {
     std::string res;
     for (int i = 0; i < names.size(); i++) {
       if (i > 0)
-        res += ",";
+        res += ", ";
       res += names[i];
     }
     return res;
