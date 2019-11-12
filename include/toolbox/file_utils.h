@@ -13,3 +13,4 @@ std::string GetFilename(const std::string& WholeFile);
 // existence of directory.
 bool MaybeCreateDirectory(const std::string& dir);
 
+void test_fds();
