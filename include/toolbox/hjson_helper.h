@@ -1,5 +1,6 @@
 #pragma once
 #include <hjson.h>
+#include <vector>
 
 bool load_json(Hjson::Value &json, const std::string& text);
 bool check_property_string( const char *parser, const Hjson::Value &o, const char *prop );
@@ -34,3 +35,35 @@ bool get_member_double(const Hjson::Value& doc, const std::string& objName, doub
 bool get_member_bool(const Hjson::Value& doc, const std::string& objName, bool &val);
 bool get_member_string(const Hjson::Value& doc, const std::string& objName, std::string& val);
 bool has_member(const Hjson::Value& doc, const std::string& objName);
+
+template<typename T> bool get_value_vector( const Hjson::Value& o, std::vector<T>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    for ( size_t i = 0; i < len; ++i ) {
+      val[i] = static_cast<T>( o[i] );
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+template<typename T>
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<T>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
