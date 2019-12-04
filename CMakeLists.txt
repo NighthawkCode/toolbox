@@ -30,6 +30,3 @@ set(toolbox_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "toolbox sourc
 set(toolbox_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE STRING "toolbox lib path" FORCE)
 
 install(TARGETS toolbox DESTINATION lib)
-
-#add_executable(test src/test.cpp)
-#target_link_libraries(test hjson toolbox)
