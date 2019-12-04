@@ -487,3 +487,424 @@ bool get_value_string( const Hjson::Value& o, std::string& val )
   }
   return false;
 }
+
+bool get_value_vector( const Hjson::Value& o, std::vector<int8_t>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_int(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_vector( const Hjson::Value& o, std::vector<int16_t>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_int(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_vector( const Hjson::Value& o, std::vector<int32_t>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_int(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_vector( const Hjson::Value& o, std::vector<int64_t>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_int(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_vector( const Hjson::Value& o, std::vector<uint8_t>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_uint(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_vector( const Hjson::Value& o, std::vector<uint16_t>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_uint(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_vector( const Hjson::Value& o, std::vector<uint32_t>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_uint(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_vector( const Hjson::Value& o, std::vector<uint64_t>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_uint(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_vector( const Hjson::Value& o, std::vector<float>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_float(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_vector( const Hjson::Value& o, std::vector<double>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_double(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_bool_deque( const Hjson::Value& o, std::deque<bool>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_bool(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_value_vector( const Hjson::Value& o, std::vector<std::string>& val )
+{
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  if ( o.type() == Hjson::Value::VECTOR ) {
+    size_t len = (size_t)o.size();
+    val.resize(len);
+
+    bool is_value_extracted = false;
+    for ( size_t i = 0; i < len; ++i ) {
+      is_value_extracted = get_value_string(o[i], val[i]);
+      if (!is_value_extracted){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<int8_t>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<int16_t>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<int32_t>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<int64_t>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<uint8_t>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<uint16_t>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<uint32_t>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<uint64_t>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<float>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<double>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
+bool get_member_bool_deque( const Hjson::Value& doc, const std::string& objName, std::deque<bool>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_bool_deque( o, val );
+  return success;
+}
+
+bool get_member_vector( const Hjson::Value& doc, const std::string& objName, std::vector<std::string>& val )
+{
+  auto o = doc[objName];
+  if ( !o.defined() ) {
+    return false;
+  }
+
+  bool success = get_value_vector( o, val );
+  return success;
+}
+
