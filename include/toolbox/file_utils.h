@@ -3,6 +3,7 @@
 #include <vector>
 
 std::string ReadFileIntoString( const char *filename );
+bool ReadFileIntoString( const char *filename, std::string &contents );
 bool file_exists( const char* filepath );
 bool dir_exists( const char* dirpath );
 std::string GetHomeFolder();

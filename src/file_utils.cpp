@@ -14,13 +14,20 @@
 #include <dirent.h>
 #include <fcntl.h>
 
-std::string ReadFileIntoString( const char *filename )
-{
+std::string ReadFileIntoString( const char *filename ) {
+  std::string contents;
+  ReadFileIntoString(filename, contents);
+  return contents;
+}
+
+bool ReadFileIntoString( const char *filename, std::string &contents ) {
+  contents = "";
+
   FILE* f;
   f = fopen(filename, "r");
   if (f == nullptr) {
     fprintf(stderr, "Could not open file %s for reading\n", filename);
-    return std::string();
+    return false;
   }
   fseek(f, 0, SEEK_END);
   auto size = ftello64(f);
@@ -32,9 +39,10 @@ std::string ReadFileIntoString( const char *filename )
   if (bytes_read != size) {
     fprintf(stderr, "Failed to read required bytes from file %s\n", filename);
     buf.resize(0);
+    return false;
   }
   fclose(f);
-  return buf;
+  return true;
 }
 
 bool file_exists( const char* filepath )
