@@ -20,8 +20,8 @@ std::string ReadFileIntoString( const char *filename ) {
   return contents;
 }
 
-bool ReadFileIntoString( const char *filename, std::string &contents ) {
-  contents = "";
+bool ReadFileIntoString( const char *filename, std::string &buf ) {
+  buf.resize(0);
 
   FILE* f;
   f = fopen(filename, "r");
@@ -31,7 +31,6 @@ bool ReadFileIntoString( const char *filename, std::string &contents ) {
   }
   fseek(f, 0, SEEK_END);
   auto size = ftello64(f);
-  std::string buf;
   buf.resize(size+1);
   buf[size] = 0;
   fseek(f, 0, SEEK_SET);
