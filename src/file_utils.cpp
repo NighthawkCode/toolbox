@@ -62,6 +62,16 @@ bool dir_exists( const char* dirpath )
   return false;
 }
 
+bool TouchFile(const char *filepath)
+{
+  int fd = open(filepath, O_WRONLY|O_CREAT|O_NOCTTY|O_NONBLOCK, 0666);
+  if (fd < 0) {
+    return false;
+  }
+  close(fd);
+  return true;
+}
+
 std::string GetHomeFolder()
 {
   const char *home_dir = nullptr;
