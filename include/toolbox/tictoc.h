@@ -1,6 +1,6 @@
 #pragma once
 
-namespace time
+namespace timing
 {
   /// simple helper to provide time in seconds represented as doubles.
   double tic();
