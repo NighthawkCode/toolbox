@@ -114,6 +114,14 @@ std::string GetFilename(const std::string& WholeFile)
     return WholeFile;
 }
 
+std::string GetDirectory(const std::string& WholeFile)
+{
+  if(WholeFile.find_last_of("/") != std::string::npos) {
+    return WholeFile.substr(0, WholeFile.find_last_of("/"));
+  }
+  return ".";
+}
+
 bool MaybeCreateDirectory(const std::string& dir) {
   if( !std::experimental::filesystem::exists( dir.c_str() ) ) {
     if( !std::experimental::filesystem::create_directories( dir.c_str() ) ) {
@@ -128,14 +136,14 @@ std::vector<std::string> split(const std::string& s, char seperator)
    std::vector<std::string> output;
    std::string::size_type prev_pos = 0, pos = 0;
 
-    while((pos = s.find(seperator, pos)) != std::string::npos) {
-      std::string substring( s.substr(prev_pos, pos-prev_pos) );
-      output.push_back(substring);
-      prev_pos = ++pos;
-    }
+   while((pos = s.find(seperator, pos)) != std::string::npos) {
+     std::string substring( s.substr(prev_pos, pos-prev_pos) );
+     output.push_back(substring);
+     prev_pos = ++pos;
+   }
 
-    output.push_back(s.substr(prev_pos, pos-prev_pos)); // Last word
-    return output;
+   output.push_back(s.substr(prev_pos, pos-prev_pos)); // Last word
+   return output;
 }
 
 static char *fcntl_flags(int flags)
