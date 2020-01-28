@@ -1,53 +1,34 @@
 #include "perftimer.h"
 #include <time.h> 
 #include <sys/time.h>
-
-// Calculate the conversion factors for seconds, milliseconds and microseconds.
-// Only call this once (or when absolutely needed) since it does double precision divides.
-void CalcPerfConversions( double& conversionS, double& conversionMS, double& conversionUS )
-{
-    // Presume the clock frequency is nanoseconds.
-    conversionUS = 1.0;         // convert nanoseconds to microseconds
-    conversionUS /= 1000.0;
-    conversionMS = 1.0;         // convet nanoseconds to milliseconds
-    conversionMS /= 1000000.0;
-    conversionS = 1.0;          // convert nanoseconds to seconds
-    conversionS /= 1000000000.0;
-}
+#include <sys/resource.h>
 
 // Get nanoseconds.
 uint64_t GetPerfTimeNanoseconds()
 {
-#if 0 // defined(_POSIX_TIMERS) && (_POSIX_TIMERS > 0)
-    // CLOCK_REALTIME, CLOCK_MONOTONIC, CLOCK_PROCESS_CPUTIME_ID, CLOCK_THREAD_CPUTIME_ID
-    struct timespec t;
-    t.tv_sec = t.tv_nsec = 0;
-    clock_gettime( CLOCK_MONOTONIC, &t );
-    return (((int64_t)(t.tv_sec)) * 1000000000LL) + t.tv_nsec;    
+  // https://stackoverflow.com/questions/12392278/measure-time-in-linux-time-vs-clock-vs-getrusage-vs-clock-gettime-vs-gettimeof
+#if 1 // defined(_POSIX_TIMERS) && (_POSIX_TIMERS > 0)
+  // CLOCK_REALTIME, CLOCK_MONOTONIC, CLOCK_PROCESS_CPUTIME_ID, CLOCK_THREAD_CPUTIME_ID
+  struct timespec t;
+  t.tv_sec = t.tv_nsec = 0;
+  clock_gettime( CLOCK_MONOTONIC, &t );
+  return (((int64_t)(t.tv_sec)) * 1000000000LL) + t.tv_nsec;    
 #else
-    // POSIX clocks are not supported in this flavor of linux.
-    struct timeval t;
-    t.tv_sec = t.tv_usec = 0;
-    gettimeofday( &t, 0 );
-    return (((int64_t)(t.tv_sec)) * 1000000000LL) + (((int64_t)(t.tv_usec)) * 1000LL);
+  // POSIX clocks are not supported in this flavor of linux.
+  struct timeval t;
+  t.tv_sec = t.tv_usec = 0;
+  gettimeofday( &t, 0 );
+  return (((int64_t)(t.tv_sec)) * 1000000000LL) + (((int64_t)(t.tv_usec)) * 1000LL);
 #endif
-    return 0;
+  return 0;
 }
 
 
 int64_t PerfTimer::m_adjust = 0;      // Adjustment time it takes to Start and Stop
-double PerfTimer::m_conversionS = 1;    // Conversion factor for seconds.
-double PerfTimer::m_conversionMS = 1;   // Conversion factor for milliseconds.
-double PerfTimer::m_conversionUS = 1;   // Conversion factor for microseconds.
 
 PerfTimer::PerfTimer()
 {
-  if( m_conversionUS == m_conversionMS ) { // Initialize conversions.
-    CalcPerfConversions( m_conversionS, m_conversionMS, m_conversionUS ); 
-    if( m_conversionUS == m_conversionMS ) {
-      m_conversionUS = 1; 
-            m_conversionMS = 1; // Timer will be useless but will not cause divide by zero
-    }
+  if( m_adjust == 0 ) { // Initialize
     Adjust();
   }
   Reset();
@@ -101,7 +82,7 @@ double PerfTimer::Elapsed()   // Returns elapsed time in seconds
     time = m_start;         // Timer has stopped
   }
   double t = (-time);
-  return t * m_conversionS;
+  return t * ConversionS();
 }
 
 double PerfTimer::Elapsedms()   // Returns elapsed time in milliseconds
@@ -115,7 +96,7 @@ double PerfTimer::Elapsedms()   // Returns elapsed time in milliseconds
     time = m_start;         // Timer has stopped
   }
   double t = (-time);
-  return t * m_conversionMS;
+  return t * ConversionMS();
 }
 
 double PerfTimer::Elapsedus() // Returns elapsed time in microseconds
@@ -129,6 +110,6 @@ double PerfTimer::Elapsedus() // Returns elapsed time in microseconds
     time = m_start;         // Timer has stopped
   }
   double t = (-time);
-  return t * m_conversionUS;
+  return t * ConversionUS();
 }
 

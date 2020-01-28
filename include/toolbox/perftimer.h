@@ -26,20 +26,17 @@ public:
   // Measure time it takes to start and stop.
   void Adjust();        
 
-  // Timer resloution
-  double Resolution()       // Returns timer resolution in seconds   
-  { return m_conversionS;   }
+  // Conversion factors
+  const double ConversionS() const {   
+    return (1.0 / 1e+9); }       // Conversion for nanoseconds to seconds.
 
-  double Resolutionms()     // Returns timer resolution in milliseconds
-  {   return m_conversionMS; }
+  const double ConversionMS() const {  
+    return (1.0 / 1e+6);  }       // Conversion for nanoseconds to milliseconds.
 
-  double Resolutionus()     // Returns timer resolution in microseconds
-  {   return m_conversionUS; }
+  const double ConversionUS() const {  
+    return (1.0 / 1e+3);  }       // Conversion for nanoseconds to microseconds.
 
 protected:
   int64_t m_start;
-  static int64_t m_adjust;      // Adjustment time it takes to Start and Stop
-  static double m_conversionS;  // Conversion factor for seconds.
-  static double m_conversionMS; // Conversion factor for milliseconds.
-  static double m_conversionUS; // Conversion factor for microseconds.
+  static int64_t m_adjust;    // Adjustment time it takes to Start and Stop
 };
