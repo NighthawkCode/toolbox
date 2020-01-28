@@ -21,6 +21,7 @@ add_library( toolbox SHARED src/file_utils.cpp
                             src/stb_image_write.cpp
                             src/stb_image.cpp
                             src/tictoc.cpp
+                            src/perftimer.cpp
                             )
 
 set_target_properties(toolbox PROPERTIES CXX_STANDARD 17)
