@@ -15,6 +15,6 @@ std::string GetDirectory(const std::string& WholeFile);
 
 // Create directory if it doesn't already exist.  Return bool indicating
 // existence of directory.
-bool MaybeCreateDirectory(const std::string& dir);
+bool CreateDirectory(const std::string& dir);
 
 void test_fds();

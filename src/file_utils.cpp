@@ -122,13 +122,26 @@ std::string GetDirectory(const std::string& WholeFile)
   return ".";
 }
 
-bool MaybeCreateDirectory(const std::string& dir) {
-  if( !std::experimental::filesystem::exists( dir.c_str() ) ) {
-    if( !std::experimental::filesystem::create_directories( dir.c_str() ) ) {
-      return false;
+bool CreateDirectory(const std::string& dir) {
+  // From stackoverflow.com  "Recursive mkdir() system call on Unix"
+  unsigned int mode = S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH;
+  char tmp[1024];
+  char *p = nullptr;
+  size_t len;
+  snprintf(tmp, sizeof(tmp),"%s",dir.c_str());
+  len = dir.size();
+  if(tmp[len - 1] == '/')
+      tmp[len - 1] = 0;
+  for(p = tmp + 1; *p; p++) {
+    if(*p == '/') {
+      *p = 0;
+      mkdir(tmp, mode);
+      *p = '/';
     }
   }
-  return true;
+  mkdir(tmp, mode);
+
+  return dir_exists(dir.c_str());
 }
 
 std::vector<std::string> split(const std::string& s, char seperator)
