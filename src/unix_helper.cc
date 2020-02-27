@@ -7,6 +7,8 @@
 #include <array>
 #include "vlog.h"
 
+#include "toolbox/unix_helper.h"
+
 bool exec(const char* cmd, std::string &output) {
   output = "";
   std::array<char, 128> buffer;

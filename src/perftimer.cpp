@@ -20,7 +20,6 @@ uint64_t GetPerfTimeNanoseconds()
   gettimeofday( &t, 0 );
   return (((int64_t)(t.tv_sec)) * 1000000000LL) + (((int64_t)(t.tv_usec)) * 1000LL);
 #endif
-  return 0;
 }
 
 
