@@ -1,12 +1,13 @@
 #pragma once
+
 #include <string>
 #include <vector>
 
-std::string ReadFileIntoString( const char *filename );
-bool ReadFileIntoString( const char *filename, std::string &contents );
-bool file_exists( const char* filepath );
-bool dir_exists( const char* dirpath );
-bool TouchFile(const char *filepath);
+std::string ReadFileIntoString(const std::string_view filename);
+bool ReadFileIntoString(const std::string_view filename, std::string& contents);
+bool file_exists(const char* filepath);
+bool dir_exists(const char* dirpath);
+bool TouchFile(const char* filepath);
 std::string GetHomeFolder();
 std::vector<std::string> GetFilesInDirectory(const std::string& dir);
 std::string GetFileExtension(const std::string& FileName);

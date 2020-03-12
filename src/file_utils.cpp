@@ -13,35 +13,29 @@
 #include <sys/resource.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <fstream>
+#include <streambuf>
 
-std::string ReadFileIntoString( const char *filename ) {
+#include "vlog.h"
+
+std::string ReadFileIntoString( const std::string_view filename ) {
   std::string contents;
   ReadFileIntoString(filename, contents);
   return contents;
 }
 
-bool ReadFileIntoString( const char *filename, std::string &buf ) {
-  buf.resize(0);
+bool ReadFileIntoString( const std::string_view filename, std::string &buf ) {
+  std::ifstream t(filename.data());
+  if (!t.is_open()) {
+    vlog_error(VCAT_GENERAL, "Could not open file %s for reading", filename.data());
+    return false;
+  }
 
-  FILE* f;
-  f = fopen(filename, "r");
-  if (f == nullptr) {
-    fprintf(stderr, "Could not open file %s for reading\n", filename);
-    return false;
-  }
-  fseek(f, 0, SEEK_END);
-  size_t size = size_t(ftello64(f));
-  buf.resize(size+1);
-  buf[size] = 0;
-  fseek(f, 0, SEEK_SET);
-  auto bytes_read = fread(&buf[0], 1, size, f);
-  if (bytes_read != size) {
-    fprintf(stderr, "Failed to read required bytes from file %s\n", filename);
-    buf.resize(0);
-    return false;
-  }
-  fclose(f);
-  return true;
+  t.seekg(0, std::ios::end);
+  buf.reserve(t.tellg());
+  t.seekg(0, std::ios::beg);
+  buf.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+  return t.good();
 }
 
 bool file_exists( const char* filepath )

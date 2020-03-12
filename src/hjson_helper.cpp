@@ -1,7 +1,13 @@
 #include "hjson_helper.h"
+
+#include <assert.h>
+#include <errno.h>
+#include <fstream>
+#include <string.h>
+
+#include "file_utils.h"
 #include "types.h"
 #include "vlog.h"
-#include <assert.h>
 
 bool load_json( Hjson::Value& json, const std::string& text )
 {
@@ -12,6 +18,31 @@ bool load_json( Hjson::Value& json, const std::string& text )
     vlog_error( VCAT_GENERAL, "Could not parse json configuration file %s", text.c_str() );
     return false;
   }
+}
+
+bool load_json_file(Hjson::Value& json, const std::string_view filename) {
+  std::string text;
+  if (!ReadFileIntoString(filename, text)) return false;
+  return load_json(json, text);
+}
+
+bool save_json(const Hjson::Value& json, const std::string_view filename) {
+  auto opt = Hjson::DefaultOptions();
+  opt.quoteKeys = true;
+  opt.separator = true;
+  opt.indentBy = "  ";
+  std::string text = Hjson::MarshalWithOptions(json, opt);
+  std::ofstream file;
+  file.open(filename.data(), std::ios_base::trunc);
+  if (!file.is_open()) {
+    vlog_error(VCAT_GENERAL, "Failed to open %s for writing: %s", filename.data(), strerror(errno));
+    return false;
+  }
+
+  file << text;
+  file.close();
+  vlog_info(VCAT_GENERAL, "Wrote %zu bytes to %s", text.size(), filename.data());
+  return true;
 }
 
 bool has_member( const Hjson::Value& doc, const std::string& objName )
