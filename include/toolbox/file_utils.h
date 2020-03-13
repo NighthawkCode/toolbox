@@ -1,7 +1,10 @@
 #pragma once
 
+#include <experimental/filesystem>
 #include <string>
 #include <vector>
+
+namespace fs = std::experimental::filesystem;
 
 std::string ReadFileIntoString(const std::string_view filename);
 bool ReadFileIntoString(const std::string_view filename, std::string& contents);
@@ -19,3 +22,20 @@ std::string GetDirectory(const std::string& WholeFile);
 bool CreateDirectory(const std::string& dir);
 
 void test_fds();
+
+namespace internal {
+
+fs::path PathConcatImpl(const std::string_view path);
+
+template <typename... Args>
+fs::path PathConcatImpl(const std::string_view path, Args... paths) {
+  return fs::path{path} / PathConcatImpl(paths...);
+}
+
+}  // namespace internal
+
+template <typename... Args>
+std::string PathConcat(const std::string_view path, Args... paths) {
+  fs::path p = internal::PathConcatImpl(path, paths...);
+  return fs::canonical(p).string();
+}
