@@ -7,7 +7,6 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <dirent.h>
-#include <experimental/filesystem> //#include <filesystem>
 #include <errno.h>
 #include <string.h>
 #include <sys/resource.h>
@@ -200,3 +199,11 @@ void test_fds()
           printf("%4i: %5i %24s %s\n", i, fcntl(i, F_GETOWN), fd_info(i), errst);
      }
 }
+
+namespace internal {
+
+fs::path PathConcatImpl(const std::string_view path) {
+  return fs::path{path};
+}
+
+}  // namespace internal
