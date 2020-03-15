@@ -45,6 +45,17 @@ bool save_json(const Hjson::Value& json, const std::string_view filename) {
   return true;
 }
 
+void merge_json(Hjson::Value& base, const Hjson::Value& add)
+{
+  if (base.type() != Hjson::Value::MAP || add.type() != Hjson::Value::MAP) {
+    return;
+  }
+  for(auto it = add.begin(); it != add.end(); it++) {
+    auto nv = it->second.clone();
+    base[it->first] = nv;
+  }
+}
+
 bool has_member( const Hjson::Value& doc, const std::string& objName )
 {
   auto v = doc[objName];
