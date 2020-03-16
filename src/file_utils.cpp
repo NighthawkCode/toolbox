@@ -95,16 +95,22 @@ std::vector<std::string> GetFilesInDirectory(const std::string& dir)
 
 std::string GetFileExtension(const std::string& FileName)
 {
-    if(FileName.find_last_of(".") != std::string::npos)
-        return FileName.substr(FileName.find_last_of(".")+1);
-    return "";
+  if(FileName.find_last_of(".") != std::string::npos)
+    return FileName.substr(FileName.find_last_of(".")+1);
+  return "";
 }
 
 std::string GetFilename(const std::string& WholeFile)
 {
-    if(WholeFile.find_last_of("/") != std::string::npos)
-        return WholeFile.substr(WholeFile.find_last_of("/")+1);
-    return WholeFile;
+  std::string ret = WholeFile;
+  if (ret.back() == '/') {
+    ret.pop_back();
+  }
+  auto slash_pos = ret.find_last_of("/");
+  if (slash_pos != std::string::npos) {
+    return ret.substr(slash_pos+1);
+  }
+  return ret;
 }
 
 std::string GetDirectory(const std::string& WholeFile)
