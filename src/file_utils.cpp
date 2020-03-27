@@ -206,6 +206,19 @@ void test_fds()
      }
 }
 
+std::string GetAbsolutePath(const std::string &FilePath) {
+  // expand '~' if necessary
+  fs::path ExpandedPath;
+  if (FilePath.at(0) == '~') {
+    auto Home = GetHomeFolder();
+    ExpandedPath = Home + "/" + FilePath.substr(1);
+  } else {
+    ExpandedPath = FilePath;
+  }
+
+  return fs::canonical(ExpandedPath).string();
+}
+
 namespace internal {
 
 fs::path PathConcatImpl(const std::string_view path) {

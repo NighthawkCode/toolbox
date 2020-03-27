@@ -16,6 +16,7 @@ std::vector<std::string> GetFilesInDirectory(const std::string& dir);
 std::string GetFileExtension(const std::string& FileName);
 std::string GetFilename(const std::string& WholeFile);
 std::string GetDirectory(const std::string& WholeFile);
+std::string GetAbsolutePath(const std::string & FilePath);
 
 // Create directory if it doesn't already exist.  Return bool indicating
 // existence of directory.
