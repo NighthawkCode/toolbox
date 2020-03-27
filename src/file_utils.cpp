@@ -206,6 +206,10 @@ void test_fds()
      }
 }
 
+std::string GetAbsolutePath(const std::string_view FilePath) {
+  return fs::canonical(fs::path(FilePath)).string();
+}
+
 namespace internal {
 
 fs::path PathConcatImpl(const std::string_view path) {
