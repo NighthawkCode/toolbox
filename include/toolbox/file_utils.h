@@ -1,6 +1,7 @@
 #pragma once
 
 #include <experimental/filesystem>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,8 @@ std::vector<std::string> GetFilesInDirectory(const std::string& dir);
 std::string GetFileExtension(const std::string& FileName);
 std::string GetFilename(const std::string& WholeFile);
 std::string GetDirectory(const std::string& WholeFile);
-std::string GetAbsolutePath(const std::string_view FilePath);
+bool GetAbsolutePath(const std::string_view FilePath, std::string& AbsolutePath,
+                     std::optional<std::reference_wrapper<std::error_code>> ErrorCode = std::nullopt);
 
 // Create directory if it doesn't already exist.  Return bool indicating
 // existence of directory.

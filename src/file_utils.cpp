@@ -206,17 +206,33 @@ void test_fds()
      }
 }
 
-std::string GetAbsolutePath(const std::string_view FilePath) {
+bool GetAbsolutePath(const std::string_view FilePath, std::string& AbsolutePath,
+                     std::optional<std::reference_wrapper<std::error_code>> ErrorCode) {
+  bool success = false;
   // expand '~' if necessary
-  std::string ExpandedPath;
+  fs::path ExpandedPath;
   if (FilePath.at(0) == '~') {
     auto Home = GetHomeFolder();
-    ExpandedPath = PathConcat(Home, FilePath.substr(1));
+    ExpandedPath = fs::path(Home).append(FilePath.substr(1));
   } else {
-    ExpandedPath = FilePath;
+    ExpandedPath = fs::path(FilePath);
   }
 
-  return fs::canonical(ExpandedPath).string();
+  std::error_code ec;
+  auto BasePath = fs::current_path();
+  AbsolutePath = fs::canonical(ExpandedPath, BasePath, ec).string();
+  if (!ec) {
+    success = true;
+  } else {
+    vlog_warning(VCAT_GENERAL, "Warning: '%s' for path: '%s' and base path: '%s'", ec.message().c_str(),
+                 ExpandedPath.c_str(), BasePath.c_str());
+  }
+
+  if (ErrorCode) {
+    ErrorCode->get().assign(ec.value(), ec.category());
+  }
+
+  return success;
 }
 
 namespace internal {
