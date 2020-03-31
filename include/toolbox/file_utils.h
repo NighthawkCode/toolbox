@@ -40,5 +40,5 @@ fs::path PathConcatImpl(const std::string_view path, Args... paths) {
 template <typename... Args>
 std::string PathConcat(const std::string_view path, Args... paths) {
   fs::path p = internal::PathConcatImpl(path, paths...);
-  return fs::canonical(p).string();
+  return fs::absolute(p).string();
 }
