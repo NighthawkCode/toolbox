@@ -32,7 +32,7 @@ public:
   }
 
   virtual bool consumeArgs(int &index, int argc, char **argv) = 0;
-  virtual ~ArgOption(){};
+  virtual ~ArgOption(){}
 };
 
 class ArgOptionBool : public ArgOption {
