@@ -39,3 +39,13 @@ bool get_arg_string(cxxopts::ParseResult& parse, const std::string& name, std::s
     return false;
   }
 }
+
+template<typename T>
+bool get_arg_vector(cxxopts::ParseResult& parse, const std::string& name, std::vector<T> &val) {
+  try {
+    val = parse[name].as<std::vector<T>>();
+    return true;
+  } catch (...) {
+    return false;
+  } 
+}
