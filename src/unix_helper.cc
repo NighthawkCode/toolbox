@@ -32,7 +32,7 @@ bool exec(const char* cmd, std::string &output) {
   return false;
 }
 
-char getchar_non_canonical() {
+char getchar_non_canonical(bool blocking) {
   char buf = 0;
   struct termios old{};
   if (tcgetattr(0, &old) < 0) {
@@ -41,6 +41,9 @@ char getchar_non_canonical() {
   old.c_lflag &= ~ICANON;
   old.c_lflag &= ~ECHO;
   old.c_cc[VMIN] = 1;
+  if(!blocking){
+    old.c_cc[VMIN] = 0;
+  }
   old.c_cc[VTIME] = 0;
   if (tcsetattr(0, TCSANOW, &old) < 0) {
     perror("tcsetattr ICANON");
