@@ -32,7 +32,7 @@ fs::path PathConcatImpl(const std::string_view path);
 
 template <typename... Args>
 fs::path PathConcatImpl(const std::string_view path, Args... paths) {
-  return fs::path{path} / PathConcatImpl(paths...);
+  return !path.empty() ? (fs::path{path} / PathConcatImpl(paths...)) : PathConcatImpl(paths...);
 }
 
 }  // namespace internal
