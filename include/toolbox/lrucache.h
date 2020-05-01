@@ -119,4 +119,13 @@ public:
       evict();
     }
   }
+
+  // for debugging
+  const auto begin() const {
+      return dq.begin();
+  }
+  const auto end() const {
+      return dq.end();
+  }
+
 };
