@@ -121,10 +121,10 @@ public:
   }
 
   // for debugging
-  const auto begin() const {
+  auto begin() const {
       return dq.begin();
   }
-  const auto end() const {
+  auto end() const {
       return dq.end();
   }
 
