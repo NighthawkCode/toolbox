@@ -24,6 +24,10 @@ std::string ReadFileIntoString( const std::string_view filename ) {
 }
 
 bool ReadFileIntoString( const std::string_view filename, std::string &buf ) {
+  if (!file_exists(filename.data())) {
+    vlog_error(VCAT_GENERAL, "Path %s is not a file or does not exist", filename.data());
+    return false;
+  }
   std::ifstream t(filename.data());
   if (!t.is_open()) {
     vlog_error(VCAT_GENERAL, "Could not open file %s for reading", filename.data());
