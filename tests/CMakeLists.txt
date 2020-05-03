@@ -15,3 +15,4 @@ macro(add_toolbox_test test_name test_cpp)
 endmacro()
 
 add_toolbox_test(test_lrucache test_lrucache.cpp)
+add_toolbox_test(test_file test_file.cpp)
