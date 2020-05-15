@@ -261,13 +261,15 @@ public:
         return false;
       }
     }
-    positional.emplace_back(argv[index]);
-    index++;
-    if (index < argc && !allow_multiple_positional) {
-      printf(" Error, argument %s cannot be parsed", argv[index]);
-    }
-    for( ; index < argc; index++) {
+    if (index < argc) {
       positional.emplace_back(argv[index]);
+      index++;
+      if (index < argc && !allow_multiple_positional) {
+        printf(" Error, argument %s cannot be parsed", argv[index]);
+      }
+      for( ; index < argc; index++) {
+        positional.emplace_back(argv[index]);
+      }
     }
     return true;
   }
