@@ -217,6 +217,10 @@ class ArgParser {
     return res;
   }
 
+  bool allow_positional = false;
+  bool allow_multiple_positional = false;
+  std::vector<std::string> positional;
+
 public:
   ArgParser(const std::string &pname, const std::string &pdesc)
       : program_name(pname), program_description(pdesc) {}
@@ -226,8 +230,18 @@ public:
     return *this;
   }
 
+  void SetPositional(bool allow, bool multiple) {
+    allow_positional = allow;
+    allow_multiple_positional = multiple;
+  }
+
+  const std::vector<std::string>& Positional() const {
+    return positional;
+  }
+
   bool ParseArgs(int argc, char **argv) {
-    for (int index = 1; index < argc;) {
+    int index;
+    for (index = 1; index < argc;) {
       std::shared_ptr<ArgOption> opt;
       for (auto &o : options) {
         if (o->match(argv[index])) {
@@ -236,6 +250,9 @@ public:
         }
       }
       if (!opt) {
+        if (allow_positional) {
+          break;
+        }
         printf(" Error, argument %s could not be parsed", argv[index]);
         return false;
       }
@@ -243,6 +260,14 @@ public:
       if (!opt->consumeArgs(index, argc, argv)) {
         return false;
       }
+    }
+    positional.emplace_back(argv[index]);
+    index++;
+    if (index < argc && !allow_multiple_positional) {
+      printf(" Error, argument %s cannot be parsed", argv[index]);
+    }
+    for( ; index < argc; index++) {
+      positional.emplace_back(argv[index]);
     }
     return true;
   }
