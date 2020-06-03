@@ -1,5 +1,6 @@
 #include "time_format.h"
-
+#include <cmath>
+#include <time.h>
 
 std::string epoch_to_sql_time(double t)
 {
