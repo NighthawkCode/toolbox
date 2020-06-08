@@ -27,14 +27,12 @@ public:
   void Adjust();        
 
   // Conversion factors
-  double ConversionS() const {   
-    return (1.0 / 1e+9); }       // Conversion for nanoseconds to seconds.
-
-  double ConversionMS() const {  
-    return (1.0 / 1e+6);  }       // Conversion for nanoseconds to milliseconds.
-
-  double ConversionUS() const {  
-    return (1.0 / 1e+3);  }       // Conversion for nanoseconds to microseconds.
+  // Conversion for nanoseconds to seconds.
+  double ConversionS() const { return 1e-9; }
+  // Conversion for nanoseconds to milliseconds.
+  double ConversionMS() const { return 1e-6; }
+  // Conversion for nanoseconds to microseconds.
+  double ConversionUS() const { return 1e-3; }
 
 protected:
   int64_t m_start;
