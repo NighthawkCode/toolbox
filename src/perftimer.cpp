@@ -76,8 +76,7 @@ double PerfTimer::Elapsed()   // Returns elapsed time in seconds
   if( m_start > 0 ) {                 
     uint64_t perftime = GetPerfTimeNanoseconds(); // Timer is still running
     time = (m_start - perftime) - m_adjust;
-  }
-  else {  
+  } else {
     time = m_start;         // Timer has stopped
   }
   double t = (-time);
@@ -90,8 +89,7 @@ double PerfTimer::Elapsedms()   // Returns elapsed time in milliseconds
   if( m_start > 0 ) {                     
     uint64_t perftime = GetPerfTimeNanoseconds();   // Timer is still running
     time = (m_start - perftime) - m_adjust;
-  }
-  else {                
+  } else {
     time = m_start;         // Timer has stopped
   }
   double t = (-time);
