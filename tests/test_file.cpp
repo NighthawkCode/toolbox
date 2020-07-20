@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-
 #include <toolbox/file_utils.h>
 
 TEST(TestFileToolbox, FileAccess) {

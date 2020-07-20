@@ -7,9 +7,7 @@
  * and avoid the whole try catch
  */
 
-inline
-bool get_arg_int(cxxopts::ParseResult& parse, const std::string& name, int &val)
-{
+inline bool get_arg_int(cxxopts::ParseResult& parse, const std::string& name, int& val) {
   try {
     val = parse[name].as<int>();
     return true;
@@ -18,9 +16,7 @@ bool get_arg_int(cxxopts::ParseResult& parse, const std::string& name, int &val)
   }
 }
 
-inline
-bool get_arg_bool(cxxopts::ParseResult& parse, const std::string& name, bool &val)
-{
+inline bool get_arg_bool(cxxopts::ParseResult& parse, const std::string& name, bool& val) {
   try {
     val = parse[name].as<bool>();
     return true;
@@ -29,9 +25,7 @@ bool get_arg_bool(cxxopts::ParseResult& parse, const std::string& name, bool &va
   }
 }
 
-inline
-bool get_arg_string(cxxopts::ParseResult& parse, const std::string& name, std::string &val)
-{
+inline bool get_arg_string(cxxopts::ParseResult& parse, const std::string& name, std::string& val) {
   try {
     val = parse[name].as<std::string>();
     return true;
@@ -40,12 +34,12 @@ bool get_arg_string(cxxopts::ParseResult& parse, const std::string& name, std::s
   }
 }
 
-template<typename T>
-bool get_arg_vector(cxxopts::ParseResult& parse, const std::string& name, std::vector<T> &val) {
+template <typename T>
+bool get_arg_vector(cxxopts::ParseResult& parse, const std::string& name, std::vector<T>& val) {
   try {
     val = parse[name].as<std::vector<T>>();
     return true;
   } catch (...) {
     return false;
-  } 
+  }
 }
