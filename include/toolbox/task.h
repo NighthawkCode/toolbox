@@ -5,7 +5,7 @@
 #include <string>
 
 struct AbstractTask {
-  virtual ~AbstractTask() {}
+  virtual ~AbstractTask();
   virtual void Execute() = 0;
 };
 typedef std::deque<AbstractTask*> TASKQUEUE;
@@ -44,7 +44,7 @@ struct Task<void> : public AbstractTask {
   template <typename FunctionType>
   Task(FunctionType execfn)
       : execution(execfn) {}
-  virtual ~Task() {}
+  virtual ~Task();
 
   virtual void Execute() {
     TASKEXEC temp = execution;
@@ -90,7 +90,7 @@ struct StringTask : public AbstractTask {
   StringTask(const char* szValue, FunctionType execfn)
       : execution(execfn)
       , strValue(szValue) {}
-  virtual ~StringTask() {}
+  virtual ~StringTask();
 
   virtual void Execute() {
     TASKEXEC temp = execution;
