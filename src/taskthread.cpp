@@ -11,6 +11,7 @@ bool TaskThread::GetGlobalQuit() { return _bTaskThreadGlobalQuit; }
 
 TaskThread::TaskThread(const char* szName)
     : m_strName(szName) {}
+
 TaskThread::~TaskThread() {
   // TRACE( "TaskThread::~TaskThread()   %s \n", m_strName.empty()? "<unnamed task thread>" :
   // m_strName.c_str() );
@@ -81,3 +82,5 @@ void TaskThread::WaitForTaskTimeoutMs(int milliseconds) {
     m_condition.wait_for(lock, std::chrono::milliseconds(milliseconds));
   }
 }
+
+void WorkerThread::IdlePoll() { WaitForTaskTimeoutMs(100); }
