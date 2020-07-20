@@ -2,8 +2,7 @@
 #include <string>
 #include <vector>
 
-static inline std::vector<std::string> split(const std::string &s,
-                                             char seperator) {
+static inline std::vector<std::string> split(const std::string& s, char seperator) {
   std::vector<std::string> output;
   std::string::size_type prev_pos = 0, pos = 0;
 
@@ -13,6 +12,6 @@ static inline std::vector<std::string> split(const std::string &s,
     prev_pos = ++pos;
   }
 
-  output.push_back(s.substr(prev_pos, pos - prev_pos)); // Last word
+  output.push_back(s.substr(prev_pos, pos - prev_pos));  // Last word
   return output;
 }

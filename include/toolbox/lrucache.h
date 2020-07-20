@@ -87,13 +87,11 @@ public:
     ma[k] = dq.begin();
   }
 
-  void insert(const Key& k, const Value& v) {
-    insert(k, std::make_shared<Value>(v));
-  }
+  void insert(const Key& k, const Value& v) { insert(k, std::make_shared<Value>(v)); }
 
   // This function will remove a key,value from the cache
   // if it was there
-  void erase(const Key&k) {
+  void erase(const Key& k) {
     if (ma.find(k) == ma.end()) {
       return;
     }
@@ -121,11 +119,6 @@ public:
   }
 
   // for debugging
-  auto begin() const {
-      return dq.begin();
-  }
-  auto end() const {
-      return dq.end();
-  }
-
+  auto begin() const { return dq.begin(); }
+  auto end() const { return dq.end(); }
 };

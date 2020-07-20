@@ -1,21 +1,18 @@
 #include "toolbox/tictoc.h"
 
-#include <time.h> 
-#include <sys/time.h>   
-#include <sys/resource.h> 
 #include <stdio.h>
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <time.h>
 
-namespace timing
-{
-  double tic()
-  {
-    struct timespec tv;
-    clock_gettime(CLOCK_REALTIME, &tv);
-    return tv.tv_sec + (double)tv.tv_nsec/1e9;
-  }
+namespace timing {
 
-  double toc( double t0 )
-  {
-    return tic() - t0;
-  }
+double tic() {
+  struct timespec tv;
+  clock_gettime(CLOCK_REALTIME, &tv);
+  return tv.tv_sec + (double)tv.tv_nsec / 1e9;
 }
+
+double toc(double t0) { return tic() - t0; }
+
+}  // namespace timing

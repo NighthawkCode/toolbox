@@ -9,6 +9,8 @@ namespace fs = std::experimental::filesystem;
 
 std::string ReadFileIntoString(const std::string_view filename);
 bool ReadFileIntoString(const std::string_view filename, std::string& contents);
+bool SaveWholeFile(const uint8_t* buffer, uint32_t size, const std::string& filename);
+
 bool file_exists(const char* filepath);
 bool dir_exists(const char* dirpath);
 bool TouchFile(const char* filepath);

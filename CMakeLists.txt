@@ -44,11 +44,12 @@ set(CMAKE_CXX_FLAGS
     -Wno-padded \
     -Wno-unused-parameter")
 
-add_library(toolbox SHARED src/file_utils.cpp src/hjson_helper.cpp src/unix_helper.cc src/stb_image_write.cpp
-                           src/stb_image.cpp src/tictoc.cpp src/perftimer.cpp src/time_format.cpp)
+add_library(
+  toolbox SHARED src/file_utils.cpp src/hjson_helper.cpp src/unix_helper.cc src/stb_image_write.cpp
+                 src/stb_image.cpp src/taskthread.cpp src/tictoc.cpp src/perftimer.cpp src/time_format.cpp)
 target_include_directories(toolbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/toolbox)
 target_include_directories(toolbox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(toolbox PUBLIC hjson vlog stdc++fs)
+target_link_libraries(toolbox PUBLIC hjson vlog stdc++fs pthread)
 set(toolbox_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "toolbox source path" FORCE)
 set(toolbox_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE STRING "toolbox lib path" FORCE)
 install(TARGETS toolbox DESTINATION lib)
@@ -58,3 +59,5 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
   enable_testing()
   add_subdirectory(tests)
 endif()
+
+set(toolbox_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "toolbox_SOURCE_DIR")

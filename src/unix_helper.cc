@@ -1,17 +1,19 @@
+#include "toolbox/unix_helper.h"
+
+#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <locale.h>
+#include <termios.h>
+#include <unistd.h>
+
+#include <array>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <array>
-#include <termios.h>
-#include <unistd.h>
+
 #include "vlog.h"
 
-#include "toolbox/unix_helper.h"
-
-bool exec(const char* cmd, std::string &output) {
+bool exec(const char* cmd, std::string& output) {
   output = "";
   std::array<char, 128> buffer;
   std::string result;
@@ -34,14 +36,14 @@ bool exec(const char* cmd, std::string &output) {
 
 char getchar_non_canonical(bool blocking) {
   char buf = 0;
-  struct termios old{};
+  struct termios old {};
   if (tcgetattr(0, &old) < 0) {
     perror("tcsetattr()");
   }
   old.c_lflag &= ~ICANON;
   old.c_lflag &= ~ECHO;
   old.c_cc[VMIN] = 1;
-  if(!blocking){
+  if (!blocking) {
     old.c_cc[VMIN] = 0;
   }
   old.c_cc[VTIME] = 0;
@@ -49,13 +51,12 @@ char getchar_non_canonical(bool blocking) {
     perror("tcsetattr ICANON");
   }
   if (read(0, &buf, 1) < 0) {
-    perror ("read()");
+    perror("read()");
   }
   old.c_lflag |= ICANON;
   old.c_lflag |= ECHO;
   if (tcsetattr(0, TCSADRAIN, &old) < 0) {
-    perror ("tcsetattr ~ICANON");
+    perror("tcsetattr ~ICANON");
   }
   return (buf);
 }
-
