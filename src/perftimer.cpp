@@ -74,7 +74,7 @@ double PerfTimer::Elapsed()  // Returns elapsed time in seconds
   } else {
     time = m_start;  // Timer has stopped
   }
-  double t = (-time);
+  double t = double(-time);
   return t * ConversionS();
 }
 
@@ -87,7 +87,7 @@ double PerfTimer::Elapsedms()  // Returns elapsed time in milliseconds
   } else {
     time = m_start;  // Timer has stopped
   }
-  double t = (-time);
+  double t = double(-time);
   return t * ConversionMS();
 }
 
@@ -100,6 +100,6 @@ double PerfTimer::Elapsedus()  // Returns elapsed time in microseconds
   } else {
     time = m_start;  // Timer has stopped
   }
-  double t = (-time);
+  double t = double(-time);
   return t * ConversionUS();
 }

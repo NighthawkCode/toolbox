@@ -10,7 +10,7 @@ namespace timing {
 double tic() {
   struct timespec tv;
   clock_gettime(CLOCK_REALTIME, &tv);
-  return tv.tv_sec + (double)tv.tv_nsec / 1e9;
+  return double(tv.tv_sec) + double(tv.tv_nsec) / 1e9;
 }
 
 double toc(double t0) { return tic() - t0; }
