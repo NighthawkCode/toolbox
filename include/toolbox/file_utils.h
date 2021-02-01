@@ -19,8 +19,10 @@ std::vector<std::string> GetFilesInDirectory(const std::string& dir);
 std::string GetFileExtension(const std::string& FileName);
 std::string GetFilename(const std::string& WholeFile);
 std::string GetDirectory(const std::string& WholeFile);
+bool IsAbsolutePath(const std::string_view filepath);
 bool GetAbsolutePath(const std::string_view FilePath, std::string& AbsolutePath,
                      std::optional<std::reference_wrapper<std::error_code>> ErrorCode = std::nullopt);
+void ReplaceStringInPlace(std::string& subject, const std::string& search, const std::string& replace);
 
 // Create directory if it doesn't already exist.  Return bool indicating
 // existence of directory.
@@ -28,7 +30,7 @@ bool CreateDirectory(const std::string& dir);
 
 void test_fds();
 
-namespace internal {
+namespace toolbox_internal {
 
 fs::path PathConcatImpl(const std::string_view path);
 
@@ -37,10 +39,10 @@ fs::path PathConcatImpl(const std::string_view path, Args... paths) {
   return !path.empty() ? (fs::path{path} / PathConcatImpl(paths...)) : PathConcatImpl(paths...);
 }
 
-}  // namespace internal
+}  // namespace toolbox_internal
 
 template <typename... Args>
 std::string PathConcat(const std::string_view path, Args... paths) {
-  fs::path p = internal::PathConcatImpl(path, paths...);
+  fs::path p = toolbox_internal::PathConcatImpl(path, paths...);
   return fs::absolute(p).string();
 }

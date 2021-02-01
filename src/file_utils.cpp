@@ -26,12 +26,12 @@ std::string ReadFileIntoString(const std::string_view filename) {
 
 bool ReadFileIntoString(const std::string_view filename, std::string& buf) {
   if (!file_exists(filename.data())) {
-    vlog_error(VCAT_GENERAL, "Path %s is not a file or does not exist", filename.data());
+    vlog_error(VCAT_GENERAL, "ReadFileIntoString: '%s' is not a file or does not exist", filename.data());
     return false;
   }
   std::ifstream t(filename.data());
   if (!t.is_open()) {
-    vlog_error(VCAT_GENERAL, "Could not open file %s for reading", filename.data());
+    vlog_error(VCAT_GENERAL, "ReadFileIntoString: Could not open file %s for reading", filename.data());
     return false;
   }
 
@@ -40,6 +40,14 @@ bool ReadFileIntoString(const std::string_view filename, std::string& buf) {
   t.seekg(0, std::ios::beg);
   buf.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
   return t.good();
+}
+
+void ReplaceStringInPlace(std::string& subject, const std::string& search, const std::string& replace) {
+  size_t pos = 0;
+  while ((pos = subject.find(search, pos)) != std::string::npos) {
+    subject.replace(pos, search.length(), replace);
+    pos += replace.length();
+  }
 }
 
 bool SaveWholeFile(const uint8_t* buffer, uint32_t size, const std::string& filename) {
@@ -196,6 +204,8 @@ void test_fds() {
   }
 }
 
+bool IsAbsolutePath(const std::string_view filepath) { return fs::path{filepath}.is_absolute(); }
+
 bool GetAbsolutePath(const std::string_view FilePath, std::string& AbsolutePath,
                      std::optional<std::reference_wrapper<std::error_code>> ErrorCode) {
   bool success = false;
@@ -225,8 +235,8 @@ bool GetAbsolutePath(const std::string_view FilePath, std::string& AbsolutePath,
   return success;
 }
 
-namespace internal {
+namespace toolbox_internal {
 
 fs::path PathConcatImpl(const std::string_view path) { return fs::path{path}; }
 
-}  // namespace internal
+}  // namespace toolbox_internal

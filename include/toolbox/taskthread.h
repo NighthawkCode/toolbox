@@ -70,5 +70,5 @@ public:
       : TaskThread(szName) {}
 
 protected:
-  virtual void IdlePoll();
+  void IdlePoll() override;
 };
