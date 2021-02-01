@@ -53,7 +53,7 @@ void TaskThread::IdlePoll() {}
 
 // Push tasks for this thread to execute.
 void TaskThread::Push(AbstractTask* pTask) {
-  std::lock_guard<std::mutex> lock(m_mutex);  // lock the scope
+  std::lock_guard lock(m_mutex);  // lock the scope
   m_queue.push_back(pTask);
   m_condition.notify_one();
 }
@@ -61,7 +61,7 @@ void TaskThread::Push(AbstractTask* pTask) {
 // This thread Pops tasks and executes them.
 AbstractTask* TaskThread::Pop() {
   AbstractTask* pTask = NULL;
-  std::lock_guard<std::mutex> lock(m_mutex);  // lock the scope
+  std::lock_guard lock(m_mutex);  // lock the scope
   if (m_queue.size() > 0) {
     pTask = m_queue.front();
     m_queue.pop_front();

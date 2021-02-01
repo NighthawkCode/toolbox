@@ -21,9 +21,9 @@ struct Task : public AbstractTask {
   template <typename FunctionType>
   Task(FunctionType execfn)
       : execution(execfn) {}
-  virtual ~Task() {}
+  ~Task() override {}
 
-  virtual void Execute() {
+  void Execute() override {
     TASKEXEC temp = execution;
     temp(this);  // <-- This lambda call can change the execution function.  It can provide another lambda
                  // function, and re-queue this task to the calling thread.
@@ -40,13 +40,13 @@ template <>
 struct Task<void> : public AbstractTask {
   typedef Task<void> TASKTYPE;
   typedef std::function<void(TASKTYPE*)> TASKEXEC;
-
+  explicit Task() {}
   template <typename FunctionType>
   Task(FunctionType execfn)
       : execution(execfn) {}
-  virtual ~Task();
+  ~Task() override;
 
-  virtual void Execute() {
+  void Execute() override {
     TASKEXEC temp = execution;
     temp(this);
   }
@@ -67,11 +67,11 @@ struct WaitableTask : public AbstractTask {
   template <typename FunctionType>
   WaitableTask(FunctionType execfn)
       : execution(execfn) {}
-  virtual ~WaitableTask() {}
+  ~WaitableTask() override {}
 
   FUTURETYPE GetFuture() { return promise.get_future(); }
 
-  virtual void Execute() {
+  void Execute() override {
     TASKEXEC temp = execution;
     ResultType result = temp(this);
     promise.set_value(result);
@@ -90,9 +90,9 @@ struct StringTask : public AbstractTask {
   StringTask(const char* szValue, FunctionType execfn)
       : execution(execfn)
       , strValue(szValue) {}
-  virtual ~StringTask();
+  ~StringTask() override;
 
-  virtual void Execute() {
+  void Execute() override {
     TASKEXEC temp = execution;
     temp(this);
   }

@@ -21,11 +21,11 @@ set(CMAKE_CXX_FLAGS
     -Werror=return-type \
     -Wno-c++98-compat \
     -Wno-c++98-compat-pedantic \
+    -Wno-ctad-maybe-unsupported \
     -Wno-global-constructors \
     -Wno-exit-time-destructors \
     -Wno-double-promotion")
 
-# Disable additional warnings to get stb_image_write to compile
 set(CMAKE_CXX_FLAGS
     "${CMAKE_CXX_FLAGS} \
     -Wno-old-style-cast \
@@ -45,9 +45,8 @@ set(CMAKE_CXX_FLAGS
     -Wno-unused-parameter")
 
 add_library(
-  toolbox SHARED
-  src/file_utils.cpp src/hjson_helper.cpp src/unix_helper.cc src/stb_image_write.cpp src/stb_image.cpp
-  src/task.cpp src/taskthread.cpp src/tictoc.cpp src/perftimer.cpp src/time_format.cpp)
+  toolbox SHARED src/file_utils.cpp src/hjson_helper.cpp src/unix_helper.cc src/task.cpp src/taskthread.cpp
+                 src/tictoc.cpp src/perftimer.cpp src/time_format.cpp src/rate.cpp)
 target_include_directories(toolbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/toolbox)
 target_include_directories(toolbox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(toolbox PUBLIC hjson vlog stdc++fs pthread)

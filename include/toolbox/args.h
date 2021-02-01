@@ -1,4 +1,7 @@
 #pragma once
+
+#include <vlog.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -55,7 +58,7 @@ public:
     output_val = default_val;
   }
 
-  bool consumeArgs(int& index, int argc, char** argv) {
+  bool consumeArgs(int& index, int argc, char** argv) override {
     (void)index;
     (void)argc;
     (void)argv;
@@ -84,9 +87,9 @@ public:
     output_val = default_val;
   }
 
-  bool consumeArgs(int& index, int argc, char** argv) {
+  bool consumeArgs(int& index, int argc, char** argv) override {
     if (index >= argc) {
-      printf("Error, argument %s needs a parameter\n", names.front().c_str());
+      vlog_error(VCAT_GENERAL, "Argument \"%s\" needs a parameter", names.front().c_str());
       return false;
     }
     output_val = atoi(argv[index++]);
@@ -114,9 +117,9 @@ public:
     output_val = default_val;
   }
 
-  bool consumeArgs(int& index, int argc, char** argv) {
+  bool consumeArgs(int& index, int argc, char** argv) override {
     if (index >= argc) {
-      printf("Error, argument %s needs a parameter\n", names.front().c_str());
+      vlog_error(VCAT_GENERAL, "Argument \"%s\" needs a parameter", names.front().c_str());
       return false;
     }
     output_val = atof(argv[index++]);
@@ -145,9 +148,9 @@ public:
     output_val = default_val;
   }
 
-  bool consumeArgs(int& index, int argc, char** argv) {
+  bool consumeArgs(int& index, int argc, char** argv) override {
     if (index >= argc) {
-      printf("Error, argument %s needs a parameter\n", names.front().c_str());
+      vlog_error(VCAT_GENERAL, "Argument \"%s\" needs a parameter", names.front().c_str());
       return false;
     }
     output_val = argv[index++];
@@ -156,6 +159,12 @@ public:
   }
 };
 
+// Supports comma-separated list of integers, including ranges, e.g.:
+// --arg 10         # 10
+// --arg 1,2,3      # 1, 2, 3
+// --arg 1:3        # 1, 2, 3
+// --arg 1,3:8,10   # 1, 3, 4, 5, 6, 7, 8, 10
+// --arg -5:-2      # -5, -4, -3, -2
 class ArgOptionIntList : public ArgOption {
 public:
   std::vector<int>& output_val;
@@ -168,14 +177,31 @@ public:
       : ArgOption(names_, explanation)
       , output_val(output_) {}
 
-  bool consumeArgs(int& index, int argc, char** argv) {
+  bool consumeArgs(int& index, int argc, char** argv) override {
     if (index >= argc) {
-      printf("Error, argument %s needs a parameter\n", names.front().c_str());
+      vlog_error(VCAT_GENERAL, "Argument \"%s\" needs a parameter", names.front().c_str());
       return false;
     }
     auto split_str = split(argv[index++], ',');
     for (auto& s : split_str) {
-      output_val.push_back(atoi(s.c_str()));
+      if (size_t sep_pos = s.find(':'); sep_pos != std::string::npos) {
+        if (sep_pos == 0 || sep_pos == s.size() - 1) {
+          vlog_error(VCAT_GENERAL, "IntList argument \"%s\" has a : in a strange place", s.c_str());
+          return false;
+        }
+        int start = atoi(s.substr(0, sep_pos).c_str());
+        int end = atoi(s.substr(sep_pos + 1, s.size() - sep_pos - 1).c_str());
+        if (end <= start) {
+          vlog_error(VCAT_GENERAL, "IntList argument \"%s\" has an end (%d) <= the start (%d)", s.c_str(),
+                     end, start);
+          return false;
+        }
+        for (int i = start; i <= end; i++) {
+          output_val.push_back(i);
+        }
+      } else {
+        output_val.push_back(atoi(s.c_str()));
+      }
     }
     seen = true;
     return true;
@@ -195,9 +221,9 @@ public:
       : ArgOption(names_, explanation)
       , output_val(output_) {}
 
-  bool consumeArgs(int& index, int argc, char** argv) {
+  bool consumeArgs(int& index, int argc, char** argv) override {
     if (index >= argc) {
-      printf("Error, argument %s needs a parameter\n", names.front().c_str());
+      vlog_error(VCAT_GENERAL, "Argument \"%s\" needs a parameter", names.front().c_str());
       return false;
     }
     auto split_str = split(argv[index++], ',');
@@ -259,7 +285,7 @@ public:
         if (allow_positional) {
           break;
         }
-        printf(" Error, argument %s could not be parsed\n", argv[index]);
+        vlog_error(VCAT_GENERAL, "Argument \"%s\" could not be parsed", argv[index]);
         return false;
       }
       index++;
@@ -271,7 +297,7 @@ public:
       positional.emplace_back(argv[index]);
       index++;
       if (index < argc && !allow_multiple_positional) {
-        printf(" Error, argument %s cannot be parsed\n", argv[index]);
+        vlog_warning(VCAT_GENERAL, "Argument \"%s\" cannot be parsed", argv[index]);
       }
       for (; index < argc; index++) {
         positional.emplace_back(argv[index]);
