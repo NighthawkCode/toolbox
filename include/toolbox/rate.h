@@ -7,7 +7,7 @@ class Rate {
 public:
   Rate(double window_seconds = 5.0) { window_seconds_ = window_seconds; }
   void addPoint(size_t num, double t);
-  double getRate(bool no_divide_by_zero=true);
+  double getRate(bool no_divide_by_zero = true);
 
 private:
   struct Change {

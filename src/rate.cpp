@@ -29,16 +29,16 @@ double Rate::getRate(bool no_divide_by_zero) {
     index = loopedIndex(index);
 
     if (index == cur_index || (!filled_ && index == array_size_ - 1)) {
-      if(no_divide_by_zero && now_sum > -epsilon && now_sum < epsilon) {
+      if (no_divide_by_zero && now_sum > -epsilon && now_sum < epsilon) {
         return 0.0;
       }
       return rate / now_sum;
     }
-    rate += double(changes_[cur_index].num - changes_[index].num);
+    rate += changes_[cur_index].num - changes_[index].num;
     now = changes_[cur_index].t - changes_[index].t;  // do next now
     now_sum += now;
   }
-  if(no_divide_by_zero && now_sum > -epsilon && now_sum < epsilon) {
+  if (no_divide_by_zero && now_sum > -epsilon && now_sum < epsilon) {
     return 0.0;
   }
   rate /= now_sum;
