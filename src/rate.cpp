@@ -34,7 +34,7 @@ double Rate::getRate(bool no_divide_by_zero) {
       }
       return rate / now_sum;
     }
-    rate += changes_[cur_index].num - changes_[index].num;
+    rate += double(changes_[cur_index].num - changes_[index].num);
     now = changes_[cur_index].t - changes_[index].t;  // do next now
     now_sum += now;
   }
