@@ -4,7 +4,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(FetchDependency)
 
-fetch_dependency(vlog "https://git.martian.ag/open-source/vlog.cbuf" "master")
+fetch_dependency(vlog "https://git.martian.ag/open-source/vlog.git" "master")
 
 find_package(hjson REQUIRED)
 
