@@ -235,6 +235,32 @@ public:
   }
 };
 
+class ArgOptionFloatList : public ArgOption {
+public:
+  std::vector<float>& output_val;
+  ArgOptionFloatList(const std::string& name, const std::string& explanation, std::vector<float>& output_)
+      : ArgOption(name, explanation)
+      , output_val(output_) {}
+
+  ArgOptionFloatList(const std::vector<std::string> names_, const std::string& explanation,
+                     std::vector<float>& output_)
+      : ArgOption(names_, explanation)
+      , output_val(output_) {}
+
+  bool consumeArgs(int& index, int argc, char** argv) override {
+    if (index >= argc) {
+      vlog_error(VCAT_GENERAL, "Argument \"%s\" needs a parameter", names.front().c_str());
+      return false;
+    }
+    auto split_str = split(argv[index++], ',');
+    for (auto& s : split_str) {
+      output_val.push_back(std::stof(s));
+    }
+    seen = true;
+    return true;
+  }
+};
+
 class ArgParser {
   std::vector<std::shared_ptr<ArgOption>> options;
   std::string program_name;
@@ -251,6 +277,8 @@ class ArgParser {
 
   bool allow_positional = false;
   bool allow_multiple_positional = false;
+  std::string positional_name;
+  std::string positional_expl;
   std::vector<std::string> positional;
 
 public:
@@ -264,9 +292,11 @@ public:
     return *this;
   }
 
-  void SetPositional(bool allow, bool multiple) {
+  void SetPositional(bool allow, bool multiple, const std::string& name, const std::string& expl) {
     allow_positional = allow;
     allow_multiple_positional = multiple;
+    positional_name = name;
+    positional_expl = expl;
   }
 
   const std::vector<std::string>& Positional() const { return positional; }
@@ -282,7 +312,8 @@ public:
         }
       }
       if (!opt) {
-        if (allow_positional) {
+        // Positional arguments do not start with a dash
+        if (allow_positional && (argv[index][0] != '-')) {
           break;
         }
         vlog_error(VCAT_GENERAL, "Argument \"%s\" could not be parsed", argv[index]);
@@ -309,9 +340,17 @@ public:
   void PrintUsage() {
     printf("%s (c) Verdant Robotics - %s\n", program_name.c_str(), program_description.c_str());
     if (options.size()) {
-      printf(" Usage: %s [OPTIONS]\n", program_name.c_str());
+      printf(" Usage: %s [OPTIONS]", program_name.c_str());
+      if (allow_positional) {
+        printf(" [%s]", positional_name.c_str());
+      }
+      printf("\n");
       for (auto& o : options) {
         printf("  %s : %s\n", list_options(o->names).c_str(), o->expl.c_str());
+      }
+      if (allow_positional) {
+        printf("  %s : Must be at the end of the command line. %s\n", positional_name.c_str(),
+               positional_expl.c_str());
       }
     }
   }

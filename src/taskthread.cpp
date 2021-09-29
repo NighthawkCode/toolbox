@@ -3,11 +3,11 @@
 
 #include <pthread.h>  // POSIX threads
 
-static std::atomic_bool _bTaskThreadGlobalQuit(false);
+static std::atomic_bool bTaskThreadGlobalQuit_(false);
 
 // Common Quit for all TaskThreads, causes all TaskThreads to exit their loop.
-void TaskThread::SetGlobalQuit(bool bQuit) { _bTaskThreadGlobalQuit = bQuit; }
-bool TaskThread::GetGlobalQuit() { return _bTaskThreadGlobalQuit; }
+void TaskThread::SetGlobalQuit(bool bQuit) { bTaskThreadGlobalQuit_ = bQuit; }
+bool TaskThread::GetGlobalQuit() { return bTaskThreadGlobalQuit_; }
 
 TaskThread::TaskThread(const char* szName)
     : m_strName(szName) {}

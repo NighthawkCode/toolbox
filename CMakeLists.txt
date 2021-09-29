@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.12.0)
 
+project(toolbox)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(FetchDependency)
@@ -22,7 +24,6 @@ set(CMAKE_CXX_FLAGS
     -Wno-c++98-compat \
     -Wno-c++98-compat-pedantic \
     -Wno-ctad-maybe-unsupported \
-    -Wno-global-constructors \
     -Wno-exit-time-destructors \
     -Wno-double-promotion")
 
@@ -46,19 +47,31 @@ set(CMAKE_CXX_FLAGS
     -Wno-unused-parameter")
 
 add_library(
-  toolbox SHARED src/file_utils.cpp src/hjson_helper.cpp src/unix_helper.cc src/task.cpp src/taskthread.cpp
-                 src/tictoc.cpp src/perftimer.cpp src/time_format.cpp src/rate.cpp)
+  toolbox SHARED src/asyncapp.cpp src/file_utils.cpp src/hjson_helper.cpp
+  src/unix_helper.cc src/task.cpp src/taskthread.cpp src/termtool.cpp
+  src/tictoc.cpp src/perftimer.cpp src/time_format.cpp src/rate.cpp src/socket.cpp src/box_utils.cpp)
+
 target_include_directories(toolbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/toolbox)
 target_include_directories(toolbox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(toolbox PUBLIC hjson vlog stb stdc++fs pthread)
+target_link_libraries(toolbox PUBLIC hjson vlog pthread)
+target_link_libraries(toolbox PRIVATE stdc++fs)
 set(toolbox_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "toolbox source path" FORCE)
 set(toolbox_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE STRING "toolbox lib path" FORCE)
 install(TARGETS toolbox DESTINATION lib)
+option(TOOLBOX_TESTS "Enable tests for toolbox" OFF)
 
-# only build the library tests when building the library if(${CMAKE_SOURCE_DIR} STREQUAL
-# ${CMAKE_CURRENT_SOURCE_DIR})
-enable_testing()
-add_subdirectory(tests)
-# endif()
+if (${ENABLE_ALL_TESTS})
+  set(TOOLBOX_TESTS ON)
+endif()
+
+# only build the library tests when building the library
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+  set(TOOLBOX_TESTS ON)
+endif()
+
+if (${TOOLBOX_TESTS})
+  enable_testing()
+  add_subdirectory(tests)
+endif()
 
 set(toolbox_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "toolbox_SOURCE_DIR")

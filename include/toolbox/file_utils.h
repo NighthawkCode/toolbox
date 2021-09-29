@@ -46,3 +46,6 @@ std::string PathConcat(const std::string_view path, Args... paths) {
   fs::path p = toolbox_internal::PathConcatImpl(path, paths...);
   return fs::absolute(p).string();
 }
+
+bool StartsWith(const std::string_view needle, const std::string_view haystack);
+bool EndsWith(const std::string_view text, const std::string_view suffix);
