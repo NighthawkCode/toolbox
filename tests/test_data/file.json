@@ -1,0 +1,9 @@
+{
+  "key": 3.2,
+  "key1": "val",
+  "nodes": {
+    "...": "file2.json",
+    "nodea": [2, 3]
+  },
+  "key1": "val0"
+}

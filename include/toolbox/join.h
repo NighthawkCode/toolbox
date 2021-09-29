@@ -3,6 +3,7 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 // okay, so this is strange but this allows these to work with vectors of strings.
@@ -26,6 +27,20 @@ std::string join_strings(const std::vector<T>& v, const std::string& sep = " ") 
 
 template <typename T>
 std::string join_strings(const std::set<T>& v, const std::string& sep = " ") {
+  std::string result;
+  for (auto it = v.begin(); it != v.end();) {
+    using namespace std;  // allows either std:: or other namespace for to_string, for custom types
+    result += to_string(*it);
+    auto next = it;
+    next++;
+    if (next != v.end()) result += sep;
+    it = next;
+  }
+  return result;
+}
+
+template <typename T>
+std::string join_strings(const std::unordered_set<T>& v, const std::string& sep = " ") {
   std::string result;
   for (auto it = v.begin(); it != v.end();) {
     using namespace std;  // allows either std:: or other namespace for to_string, for custom types

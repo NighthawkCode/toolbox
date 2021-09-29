@@ -18,6 +18,17 @@
 
 #include "vlog.h"
 
+bool StartsWith(const std::string_view needle, const std::string_view haystack) {
+  return haystack.rfind(needle, 0) == 0;
+}
+
+bool EndsWith(const std::string_view text, const std::string_view suffix) {
+  if (text.length() >= suffix.length()) {
+    return (0 == text.compare(text.length() - suffix.length(), suffix.length(), suffix));
+  }
+  return false;
+}
+
 std::string ReadFileIntoString(const std::string_view filename) {
   std::string contents;
   ReadFileIntoString(filename, contents);

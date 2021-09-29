@@ -9,7 +9,7 @@
 bool load_json(Hjson::Value& json, const std::string& text);
 bool load_json_file(Hjson::Value& json, const std::string_view filename);
 bool save_json(const Hjson::Value& json, const std::string_view filename);
-void merge_json(Hjson::Value& base, const Hjson::Value& add);
+void merge_json(Hjson::Value& base, const Hjson::Value& add, bool overwrite = true);
 bool check_property_string(const char* parser, const Hjson::Value& o, const char* prop);
 bool check_property_obj(const char* parser, const Hjson::Value& o, const char* prop);
 bool check_property_bool(const char* parser, const Hjson::Value& o, const char* prop);
