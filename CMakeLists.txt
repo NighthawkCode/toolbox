@@ -6,9 +6,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(FetchDependency)
 
-fetch_dependency(vlog "https://git.martian.ag/open-source/vlog.git" "master")
-fetch_dependency(hjson "https://git.martian.ag/open-source/hjson.git" "master")
-fetch_dependency(gtest "https://git.martian.ag/open-source/gtest.git" "master")
+fetch_dependency(vlog "https://github.com/Verdant-Robotics/vlog.git" "main")
+fetch_dependency(hjson "https://github.com/Verdant-Robotics/hjson.git" "main")
+fetch_dependency(gtest "https://github.com/google/googletest.git" "8a6feabf04bec8fb125e0df0ad1195c42350725f")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)

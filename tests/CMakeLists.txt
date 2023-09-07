@@ -15,7 +15,11 @@ macro(add_toolbox_test test_name test_cpp)
                 -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-ctad-maybe-unsupported \
                 -Wno-exit-time-destructors -Wno-double-promotion -Wno-global-constructors")
   target_link_libraries(${test_name} PUBLIC toolbox gtest)
-  add_unit_test(${test_name} ${test_name})
+  if (COMMAND add_unit_test)
+    add_unit_test(${test_name} ${test_name})
+  else()
+    add_test(${test_name} ${test_name})
+  endif()
 endmacro()
 
 # https://verdantrobotics-jira.atlassian.net/browse/VC-7069
