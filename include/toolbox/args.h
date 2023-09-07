@@ -1,12 +1,22 @@
 #pragma once
 
+#include <cxxabi.h>
 #include <vlog.h>
 
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
 #include "split.h"
+
+template <typename type>
+std::string TypeToString() {
+  char* name = abi::__cxa_demangle(typeid(type).name(), 0, 0, NULL);
+  std::string r(name);
+  free(name);
+  return r;
+}
 
 // Base class for options
 class ArgOption {
@@ -67,20 +77,20 @@ public:
     return true;
   }
 };
-
-class ArgOptionInt : public ArgOption {
+template <typename T>
+class ArgOptionNumber : public ArgOption {
 public:
-  int default_val;
-  int& output_val;
-  ArgOptionInt(const std::string& name, const std::string& explanation, int& output_, int def_val = -1)
+  T default_val;
+  T& output_val;
+  ArgOptionNumber(const std::string& name, const std::string& explanation, T& output_, T def_val = -1)
       : ArgOption(name, explanation)
       , default_val(def_val)
       , output_val(output_) {
     output_val = default_val;
   }
 
-  ArgOptionInt(const std::vector<std::string> names_, const std::string& explanation, int& output_,
-               int def_val = -1)
+  ArgOptionNumber(const std::vector<std::string> names_, const std::string& explanation, T& output_,
+                  T def_val = -1)
       : ArgOption(names_, explanation)
       , default_val(def_val)
       , output_val(output_) {
@@ -92,17 +102,26 @@ public:
       vlog_error(VCAT_GENERAL, "Argument \"%s\" needs a parameter", names.front().c_str());
       return false;
     }
-    output_val = atoi(argv[index++]);
+    std::istringstream ss(argv[index++]);
+    ss >> output_val;
+    if (ss.fail()) {
+      vlog_error(VCAT_GENERAL, "Argument \"%s\" was unable to convert \"%s\" to %s", names.front().c_str(),
+                 argv[index - 1], TypeToString<T>().c_str());
+      return false;
+    }
     seen = true;
     return true;
   }
 };
 
+using ArgOptionInt = ArgOptionNumber<int>;
+using ArgOptionDouble = ArgOptionNumber<double>;
+
 class ArgOptionFloat : public ArgOption {
 public:
   float default_val;
   float& output_val;
-  ArgOptionFloat(const std::string& name, const std::string& explanation, float& output_, float def_val = -1)
+  ArgOptionFloat(const std::string& name, const std::string& explanation, float& output_, float def_val)
       : ArgOption(name, explanation)
       , default_val(def_val)
       , output_val(output_) {
@@ -110,12 +129,20 @@ public:
   }
 
   ArgOptionFloat(const std::vector<std::string> names_, const std::string& explanation, float& output_,
-                 float def_val = -1)
+                 float def_val)
       : ArgOption(names_, explanation)
       , default_val(def_val)
       , output_val(output_) {
     output_val = default_val;
   }
+
+  ArgOptionFloat(const std::string& name, const std::string& explanation, float& output_)
+      : ArgOption(name, explanation)
+      , output_val(output_) {}
+
+  ArgOptionFloat(const std::vector<std::string> names_, const std::string& explanation, float& output_)
+      : ArgOption(names_, explanation)
+      , output_val(output_) {}
 
   bool consumeArgs(int& index, int argc, char** argv) override {
     if (index >= argc) {
@@ -182,29 +209,13 @@ public:
       vlog_error(VCAT_GENERAL, "Argument \"%s\" needs a parameter", names.front().c_str());
       return false;
     }
-    auto split_str = split(argv[index++], ',');
-    for (auto& s : split_str) {
-      if (size_t sep_pos = s.find(':'); sep_pos != std::string::npos) {
-        if (sep_pos == 0 || sep_pos == s.size() - 1) {
-          vlog_error(VCAT_GENERAL, "IntList argument \"%s\" has a : in a strange place", s.c_str());
-          return false;
-        }
-        int start = atoi(s.substr(0, sep_pos).c_str());
-        int end = atoi(s.substr(sep_pos + 1, s.size() - sep_pos - 1).c_str());
-        if (end <= start) {
-          vlog_error(VCAT_GENERAL, "IntList argument \"%s\" has an end (%d) <= the start (%d)", s.c_str(),
-                     end, start);
-          return false;
-        }
-        for (int i = start; i <= end; i++) {
-          output_val.push_back(i);
-        }
-      } else {
-        output_val.push_back(atoi(s.c_str()));
-      }
+    if (toolbox::split_int_range(argv[index++], output_val)) {
+      seen = true;
+      return true;
     }
-    seen = true;
-    return true;
+    vlog_error(VCAT_GENERAL, "Failed to parse IntList argument %s: %s", names.front().c_str(),
+               argv[index - 1]);
+    return false;
   }
 };
 
@@ -226,7 +237,7 @@ public:
       vlog_error(VCAT_GENERAL, "Argument \"%s\" needs a parameter", names.front().c_str());
       return false;
     }
-    auto split_str = split(argv[index++], ',');
+    auto split_str = toolbox::split(argv[index++], ',');
     for (auto& s : split_str) {
       output_val.push_back(s);
     }
@@ -252,7 +263,7 @@ public:
       vlog_error(VCAT_GENERAL, "Argument \"%s\" needs a parameter", names.front().c_str());
       return false;
     }
-    auto split_str = split(argv[index++], ',');
+    auto split_str = toolbox::split(argv[index++], ',');
     for (auto& s : split_str) {
       output_val.push_back(std::stof(s));
     }

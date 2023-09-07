@@ -9,9 +9,14 @@ namespace verdant {
 
 std::string RobotRoleToIp(const std::string& robot_role);
 
+// reads robot role from /etc/robot_role and returns corresponding IP address for ethernet based ECU
+std::string GetSyncboxIP(std::string& robot_role);
+std::string GetSyncboxIP();
+
 std::string GetPeerList(const std::vector<std::string>& box_names);
 
 std::string ExtractBoxName(const std::string& topic_name);
+std::string ExtractTopicNoBox(const std::string& topic_name);
 
 static inline std::string GetBoxSpecificNodeName(const std::string& box_name, const std::string& node_name) {
   return box_name + "-" + node_name;

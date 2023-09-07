@@ -7,15 +7,24 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(FetchDependency)
 
 fetch_dependency(vlog "https://git.martian.ag/open-source/vlog.git" "master")
-
-find_package(hjson REQUIRED)
+fetch_dependency(hjson "https://git.martian.ag/open-source/hjson.git" "master")
+fetch_dependency(gtest "https://git.martian.ag/open-source/gtest.git" "master")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} \
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  set(CMAKE_CXX_FLAGS
+          "${CMAKE_CXX_FLAGS} \
+    -pedantic \
+    -Werror \
+    -Wall \
+    -Wextra \
+    ")
+else()
+  set(CMAKE_CXX_FLAGS
+          "${CMAKE_CXX_FLAGS} \
     -Werror \
     -Wall \
     -Wextra \
@@ -27,9 +36,9 @@ set(CMAKE_CXX_FLAGS
     -Wno-exit-time-destructors \
     -Wno-double-promotion")
 
-# Disable additional warnings to get stb_image_write to compile
-set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} \
+  # Disable additional warnings to get stb_image_write to compile
+  set(CMAKE_CXX_FLAGS
+          "${CMAKE_CXX_FLAGS} \
     -Wno-old-style-cast \
     -Wno-sign-conversion \
     -Wno-implicit-fallthrough \
@@ -45,11 +54,26 @@ set(CMAKE_CXX_FLAGS
     -Wno-disabled-macro-expansion \
     -Wno-padded \
     -Wno-unused-parameter")
+endif()
 
-add_library(
-  toolbox SHARED src/asyncapp.cpp src/file_utils.cpp src/hjson_helper.cpp
-  src/unix_helper.cc src/task.cpp src/taskthread.cpp src/termtool.cpp
-  src/tictoc.cpp src/perftimer.cpp src/time_format.cpp src/rate.cpp src/socket.cpp src/box_utils.cpp)
+add_library(toolbox SHARED
+  src/asyncapp.cpp
+  src/box_utils.cpp
+  src/datetime_str_parser.cpp
+  src/file_utils.cpp
+  src/hjson_helper.cpp
+  src/perftimer.cpp
+  src/rate.cpp
+  src/socket.cpp
+  src/split.cpp
+  src/string_utils.cpp
+  src/task.cpp
+  src/taskthread.cpp
+  src/termtool.cpp
+  src/tictoc.cpp
+  src/time_format.cpp
+  src/unix_helper.cc
+)
 
 target_include_directories(toolbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/toolbox)
 target_include_directories(toolbox PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

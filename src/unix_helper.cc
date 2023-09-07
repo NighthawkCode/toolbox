@@ -1,13 +1,10 @@
 #include "toolbox/unix_helper.h"
 
-#include <locale.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
 #include <array>
-#include <iostream>
 #include <memory>
 #include <string>
 

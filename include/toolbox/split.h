@@ -2,16 +2,20 @@
 #include <string>
 #include <vector>
 
-static inline std::vector<std::string> split(const std::string& s, char seperator) {
-  std::vector<std::string> output;
-  std::string::size_type prev_pos = 0, pos = 0;
+namespace toolbox {
 
-  while ((pos = s.find(seperator, pos)) != std::string::npos) {
-    std::string substring(s.substr(prev_pos, pos - prev_pos));
-    output.push_back(substring);
-    prev_pos = ++pos;
-  }
+// Split a string opn occurrences of 'sep' character, returning a vector of the strings.
+// Zero-length substrings will be returned as empty elements in the vector (i.e.
+// split(",,", ',') will return {"", "", ""}).
+std::vector<std::string> split(const std::string& s, char seperator);
 
-  output.push_back(s.substr(prev_pos, pos - prev_pos));  // Last word
-  return output;
-}
+// Supports comma-separated list of integers, including ranges, e.g.:
+// 10         # 10
+// 1,2,3      # 1, 2, 3
+// 1:3        # 1, 2, 3
+// 1,3:8,10   # 1, 3, 4, 5, 6, 7, 8, 10
+// -5:-2      # -5, -4, -3, -2
+
+[[nodiscard]] bool split_int_range(const std::string& input, std::vector<int>& output_val);
+
+}  // namespace toolbox

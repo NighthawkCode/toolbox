@@ -2,17 +2,12 @@
 
 #include <arpa/inet.h>
 #include <fcntl.h>
-#include <net/if.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <resolv.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/ioctl.h>
 #include <sys/poll.h>
-#include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -153,6 +148,40 @@ void Socket::Close() {
   state_ = S_UNINITIALIZED;
 }
 
+Socket::State Socket::PollClientConnected(int timeoutMilliseconds) {
+  if (state_ == S_UNINITIALIZED || state_ == S_LISTENING) {
+    return state_;
+  } else if (state_ == S_CONNECTING) {
+    int pollresult = 0;
+    pollfd pfd;
+    pfd.fd = sock_;
+    pfd.events = POLLIN | POLLOUT;
+    pfd.revents = 0;
+    pollresult = poll(&pfd, 1, timeoutMilliseconds);
+    if ((pfd.revents & (POLLERR | POLLHUP | POLLNVAL)) != 0) {
+      close(sock_);
+      sock_ = 0;
+      state_ = S_UNINITIALIZED;
+    } else {
+      if (pollresult == -1) {
+        // not connected yet
+      } else if (pollresult == 0) {
+        // timeout
+      } else {
+        if (((pfd.revents & POLLOUT) != POLLOUT)) {
+          // printf("Remote end hung up or connection failed\n");
+          close(sock_);
+          sock_ = 0;
+          state_ = S_UNINITIALIZED;
+        } else {
+          state_ = S_CONNECTED_IDLE;
+        }
+      }
+    }
+  }
+  return state_;
+}
+
 uint32_t Socket::Read(char* buf, uint32_t bufsize, int timeoutMilliseconds) {
   if (state_ == S_UNINITIALIZED || state_ == S_LISTENING) {
     return 0;
@@ -170,7 +199,7 @@ uint32_t Socket::Read(char* buf, uint32_t bufsize, int timeoutMilliseconds) {
       // timeout
     } else {
       if (((pfd.revents & POLLOUT) != POLLOUT)) {
-        //printf("Remote end hung up or connection failed\n");
+        // printf("Remote end hung up or connection failed\n");
         close(sock_);
         sock_ = 0;
         return 0;
@@ -183,7 +212,7 @@ uint32_t Socket::Read(char* buf, uint32_t bufsize, int timeoutMilliseconds) {
           return 0;  // this is 'ok', since its a non-blocking socket
         } else {
           if (bytes < 0) {
-            //printf("recv() error  %zd  %d\n", bytes, errno);
+            // printf("recv() error  %zd  %d\n", bytes, errno);
           }
           if (bytes >= 0) {
             return (uint32_t)bytes;
@@ -198,7 +227,7 @@ uint32_t Socket::Read(char* buf, uint32_t bufsize, int timeoutMilliseconds) {
       return 0;                                // this is 'ok', since its a non-blocking socket
     } else {
       if (bytes < 0) {
-        //printf("recv() error  %zd  %d\n", bytes, errno);
+        // printf("recv() error  %zd  %d\n", bytes, errno);
       } else if (bytes >= 0) {
         return (uint32_t)bytes;
       }
@@ -208,13 +237,13 @@ uint32_t Socket::Read(char* buf, uint32_t bufsize, int timeoutMilliseconds) {
 }
 
 uint32_t Socket::Write(const char* buf, uint32_t bufsize) {
-  if (state_ == S_UNINITIALIZED || state_ == S_LISTENING) {
+  if (state_ != S_CONNECTED_IDLE) {
     return 0;
   }
   ssize_t size = 0;
   size = ::send(sock_, buf, bufsize, MSG_DONTWAIT);
   if (size > 0) {
-    return (uint32_t) size;
+    return (uint32_t)size;
   }
   return 0;
 }

@@ -40,6 +40,7 @@ void TaskThread::Run(void* pExtra) {
 // You make your own thread loop outside this class, and call Poll() yourself.
 // e.g. an Application Main Thread can Poll() to execute tasks.
 void TaskThread::Poll(void* pExtra) {
+  (void)pExtra;
   AbstractTask* pTask = this->Pop();
   while (pTask && !GetGlobalQuit()) {
     pTask->Execute();  // Get the result in this thread

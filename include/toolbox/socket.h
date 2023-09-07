@@ -14,10 +14,11 @@ public:
     S_CONNECTING,
     S_CONNECTED_IDLE,
   };
-  State GetState() { return state_; }
+  State GetState() const { return state_; }
 
   bool StartServer(int port);
   bool PollServer();
+  State PollClientConnected(int timeoutMilliseconds = 0);
 
   bool Connect(const std::string& server, int port);
   void Close();
@@ -25,7 +26,7 @@ public:
   uint32_t Read(char* buf, uint32_t bufsize, int timeoutMilliseconds = 0);
   uint32_t Write(const char* buf, uint32_t bufsize);
 
-private:
+protected:
   int port_ = 1337;
   std::string server_;
   int sock_ = 0;

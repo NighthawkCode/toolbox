@@ -53,7 +53,9 @@ protected:
   void WaitForTaskTimeoutMs(int milliseconds);
 
   TaskThread(const char* szName, bool bKey)
-      : m_strName(szName) {}
+      : m_strName(szName) {
+    (void)bKey;
+  }
 
 protected:
   std::string m_strName;

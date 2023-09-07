@@ -1,9 +1,7 @@
 #include "termtool.h"
 
-#include <errno.h>   // for errno
 #include <signal.h>  // for signal definitions
 #include <stdio.h>
-#include <string.h>     // for strerror
 #include <sys/ioctl.h>  // ioctls for terminal query
 #include <termios.h>    // for tcsetattr and others
 #include <unistd.h>
@@ -47,6 +45,7 @@ void RevertTerminalSettings() noexcept { tcsetattr(STDIN_FILENO, TCSANOW, &orig_
  *
  */
 static void handle_winch(int sig) {
+  (void)sig;
   struct winsize w;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
   g_cols_ = w.ws_col;

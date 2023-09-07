@@ -6,9 +6,10 @@
 #include <string>
 #include <vector>
 
-bool load_json(Hjson::Value& json, const std::string& text);
+bool load_json(Hjson::Value& json, std::string_view text);
 bool load_json_file(Hjson::Value& json, const std::string_view filename);
-bool save_json(const Hjson::Value& json, const std::string_view filename);
+bool save_json(const Hjson::Value& json, const std::string_view filename, bool no_space = false,
+               bool append = false);
 void merge_json(Hjson::Value& base, const Hjson::Value& add, bool overwrite = true);
 bool check_property_string(const char* parser, const Hjson::Value& o, const char* prop);
 bool check_property_obj(const char* parser, const Hjson::Value& o, const char* prop);
@@ -54,6 +55,7 @@ bool get_member_uint(const Hjson::Value& doc, const std::string& objName, uint64
 bool get_member_float(const Hjson::Value& doc, const std::string& objName, float& val);
 bool get_member_double(const Hjson::Value& doc, const std::string& objName, double& val);
 bool get_member_bool(const Hjson::Value& doc, const std::string& objName, bool& val);
+bool get_member_bool_relaxed(const Hjson::Value& doc, const std::string& objName, bool& val);
 bool get_member_string(const Hjson::Value& doc, const std::string& objName, std::string& val);
 bool get_member_vector(const Hjson::Value& doc, const std::string& objName, std::vector<int8_t>& val);
 bool get_member_vector(const Hjson::Value& doc, const std::string& objName, std::vector<int16_t>& val);

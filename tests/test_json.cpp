@@ -1,9 +1,7 @@
-#include <assert.h>
 #include <gtest/gtest.h>
 #include <toolbox/hjson_helper.h>
 
 #include <string>
-#include <unordered_map>
 
 TEST(TestJsonInclude, BasicInclude) {
   Hjson::Value json;

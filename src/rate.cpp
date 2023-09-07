@@ -12,7 +12,7 @@ void Rate::addPoint(size_t num, double t) {
     }
   }
 }
-double Rate::getRate(bool no_divide_by_zero) {
+double Rate::getRate(bool no_divide_by_zero) const {
   int cur_index = current_index_ - 1;  // index of last element
   cur_index = loopedIndex(cur_index);
   int index = cur_index;
@@ -45,4 +45,4 @@ double Rate::getRate(bool no_divide_by_zero) {
   return rate;
 }
 
-int Rate::loopedIndex(int index) { return (index % array_size_ + array_size_) % array_size_; }
+int Rate::loopedIndex(int index) const { return (index % array_size_ + array_size_) % array_size_; }

@@ -1,5 +1,12 @@
 #include "file_utils.h"
 
+#ifdef _WIN32
+#include <windows.h>  // GetModuleFileNameW
+#else
+#include <limits.h>  // PATH_MAX
+#include <unistd.h>  // readlink
+#endif
+
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -7,11 +14,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/types.h>
-#include <unistd.h>
 
 #include <fstream>
 #include <streambuf>
@@ -87,6 +92,20 @@ bool dir_exists(const char* dirpath) {
   return false;
 }
 
+size_t GetSize(const fs::path& p) {
+  if (fs::is_regular_file(p)) {
+    return fs::file_size(p);
+  } else if (fs::is_directory(p)) {
+    size_t total = 0;
+    for (auto& it : fs::directory_iterator(p)) {
+      total += GetSize(it);
+    }
+    return total;
+  } else {
+    return 0;
+  }
+}
+
 bool TouchFile(const char* filepath) {
   int fd = open(filepath, O_WRONLY | O_CREAT | O_NOCTTY | O_NONBLOCK, 0666);
   if (fd < 0) {
@@ -144,6 +163,11 @@ std::string GetDirectory(const std::string& WholeFile) {
     return WholeFile.substr(0, WholeFile.find_last_of("/"));
   }
   return ".";
+}
+
+std::string GetParentDirectoryName(const std::string& WholeFile) {
+  std::string dir_name = GetFilename(GetDirectory(WholeFile));
+  return dir_name;
 }
 
 bool CreateDirectory(const std::string& dir) {
@@ -220,23 +244,30 @@ bool IsAbsolutePath(const std::string_view filepath) { return fs::path{filepath}
 bool GetAbsolutePath(const std::string_view FilePath, std::string& AbsolutePath,
                      std::optional<std::reference_wrapper<std::error_code>> ErrorCode) {
   bool success = false;
-  // expand '~' if necessary
   fs::path ExpandedPath;
-  if (FilePath.at(0) == '~') {
-    auto Home = GetHomeFolder();
-    ExpandedPath = fs::path(Home).append(FilePath.substr(1));
+  if (!FilePath.empty() && FilePath.at(0) == '~') {
+    // expand '~' if necessary
+    auto expanded_path_string = GetHomeFolder();
+    const auto remaining_path = std::string_view(FilePath.data() + 1, FilePath.length() - 1);
+    expanded_path_string.append(remaining_path);
+    ExpandedPath = expanded_path_string;
   } else {
-    ExpandedPath = fs::path(FilePath);
+    ExpandedPath = FilePath;
   }
 
   std::error_code ec;
+#if (defined(_GLIBCXX_RELEASE) && (_GLIBCXX_RELEASE > 7)) || \
+    (defined(_LIBCPP_VERSION) && (_LIBCPP_VERSION > 10000))
+  AbsolutePath = fs::canonical(ExpandedPath, ec).string();
+#else
   auto BasePath = fs::current_path();
   AbsolutePath = fs::canonical(ExpandedPath, BasePath, ec).string();
+#endif
   if (!ec) {
     success = true;
   } else {
-    vlog_warning(VCAT_GENERAL, "Warning: '%s' for path: '%s' and base path: '%s'", ec.message().c_str(),
-                 ExpandedPath.c_str(), BasePath.c_str());
+    vlog_warning(VCAT_GENERAL, "Warning: '%s' for trying to compute Absolute path from path: '%s'",
+                 ec.message().c_str(), ExpandedPath.c_str());
   }
 
   if (ErrorCode) {
@@ -246,8 +277,91 @@ bool GetAbsolutePath(const std::string_view FilePath, std::string& AbsolutePath,
   return success;
 }
 
+// Recursive function to perform wildcard matching between two null
+// terminated strings. The only wildcard supported is '*'. This probably will
+// not work properly if str has '*' present in it as this token is defined as
+// wildcard
+// Error Codes/Scenarios and edge cases:
+//   This function does not handle escaping of wildcards. The behavior is undefined if
+//   the str also has *
+// Args:
+//   wild: The pattern to match and contains wildcard
+//   str: The string to check if it matches wild
+bool Match(const char* wild, const char* str) {
+  if (*wild == 0 && *str == 0) {
+    return true;
+  }
+  if (*wild == '*') {
+    if (Match(wild + 1, str)) return true;
+    if (*str == 0) return false;
+    return Match(wild, str + 1);
+  }
+  if (*wild == *str) {
+    return Match(wild + 1, str + 1);
+  }
+  return false;
+}
+
+// Trim string from left
+static inline void TrimStringLeft(std::string& str) {
+  str.erase(str.begin(),
+            std::find_if(str.begin(), str.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+}
+
+// Trim string from right
+static inline void TrimStringRight(std::string& str) {
+  str.erase(std::find_if(str.rbegin(), str.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(),
+            str.end());
+}
+
+// Trim both leading & trailing substring from string
+void TrimString(std::string& str) {
+  TrimStringLeft(str);
+  TrimStringRight(str);
+}
+
+// Get the user name on Linux.  Useful for concatenating absolute paths.
+std::string GetUserName() {
+  uid_t uid = geteuid();
+  struct passwd* pw = getpwuid(uid);  // This works inside vdev container
+  if (pw) {
+    // printf( "getpwuid: %s\n", pw->pw_name );
+    return std::string(pw->pw_name);
+  }
+  return std::string();
+}
+
+std::string GetExecutablePath() {
+#ifdef _WIN32
+  wchar_t path[MAX_PATH] = {0};
+  GetModuleFileNameW(NULL, path, MAX_PATH);
+  return path;
+#else
+  char result[PATH_MAX];
+  ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+  return std::string(result, (count > 0) ? count : 0);
+#endif
+}
+
 namespace toolbox_internal {
 
 fs::path PathConcatImpl(const std::string_view path) { return fs::path{path}; }
 
 }  // namespace toolbox_internal
+
+std::vector<std::string> FindFilesRecursive(const std::string& start_path,
+                                            const std::string& file_extension) {
+  std::vector<std::string> files;
+  // If path does not exists, return empty vector and leave
+  if (!dir_exists(start_path.c_str())) return files;
+  for (const fs::directory_entry& dir_entry :
+       fs::recursive_directory_iterator(start_path, fs::directory_options::skip_permission_denied)) {
+    if (!file_extension.empty()) {
+      std::string ext = GetFileExtension(dir_entry.path().string());
+      if (ext == file_extension) files.emplace_back(dir_entry.path().string());
+    } else {
+      files.emplace_back(file_extension);
+    }
+  }
+  return files;
+}

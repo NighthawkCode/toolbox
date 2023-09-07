@@ -1,10 +1,9 @@
 #include "hjson_helper.h"
 
-#include <assert.h>
 #include <errno.h>
+#include <math.h>
 #include <string.h>
 
-#include <experimental/filesystem>
 #include <fstream>
 #include <string_view>
 #include <unordered_map>
@@ -13,7 +12,14 @@
 #include "types.h"
 #include "vlog.h"
 
+#if (defined(_GLIBCXX_RELEASE) && (_GLIBCXX_RELEASE > 7)) || \
+    (defined(_LIBCPP_VERSION) && (_LIBCPP_VERSION > 10000))
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
+#endif
 
 static constexpr const char* dots = "...";
 
@@ -91,18 +97,19 @@ static bool load_json_file(Hjson::Value& json, const std::string_view filename,
   return true;
 }
 
-bool load_json(Hjson::Value& json, const std::string& text) {
+bool load_json(Hjson::Value& json, const std::string_view text) {
   try {
-    json = Hjson::Unmarshal(text.c_str());
+    json = Hjson::Unmarshal(text.data(), text.size());
     if (find_dots(json)) {
       vlog_warning(VCAT_GENERAL,
                    "Warning, while loading a json from a string we found an include that cannot be "
-                   "expanded.\nJSON: %s",
-                   text.c_str());
+                   "expanded.\nJSON: %.*s",
+                   static_cast<int>(text.length()), text.data());
     }
     return true;
   } catch (...) {
-    vlog_error(VCAT_GENERAL, "Could not parse json configuration file %s", text.c_str());
+    vlog_error(VCAT_GENERAL, "Could not parse json configuration file %.*s", static_cast<int>(text.length()),
+               text.data());
     return false;
   }
 }
@@ -112,23 +119,42 @@ bool load_json_file(Hjson::Value& json, const std::string_view filename) {
   return load_json_file(json, filename, incfiles);
 }
 
-bool save_json(const Hjson::Value& json, const std::string_view filename) {
-  auto opt = Hjson::DefaultOptions();
-  opt.quoteKeys = true;
-  opt.separator = true;
-  opt.indentBy = "  ";
-  std::string text = Hjson::MarshalWithOptions(json, opt);
-  std::ofstream file;
-  file.open(filename.data(), std::ios_base::trunc);
-  if (!file.is_open()) {
-    vlog_error(VCAT_GENERAL, "Failed to open %s for writing: %s", filename.data(), strerror(errno));
+bool save_json(const Hjson::Value& json, const std::string_view filename, bool no_space, bool append) {
+  try {
+    auto opt = Hjson::DefaultOptions();
+    opt.quoteKeys = true;
+    opt.separator = true;
+    if (no_space) {
+      opt.eol = "";
+      opt.indentBy = "";
+    } else {
+      opt.indentBy = "  ";
+    }
+    std::string text = Hjson::MarshalWithOptions(json, opt);
+    std::ofstream file;
+    if (append)
+      file.open(filename.data(), std::ios_base::app);
+    else
+      file.open(filename.data(), std::ios_base::trunc);
+
+    if (!file.is_open()) {
+      vlog_error(VCAT_GENERAL, "Failed to open %s for writing: %s", filename.data(), strerror(errno));
+      return false;
+    }
+
+    if (append)
+      file << text + "\n";
+    else
+      file << text;
+    file.close();
+    return true;
+  } catch (const std::exception& e) {
+    vlog_error(VCAT_GENERAL, "Exception error trying to save json %s: %s", filename.data(), e.what());
+    return false;
+  } catch (...) {
+    vlog_error(VCAT_GENERAL, "Could not Marshal json to file %s", filename.data());
     return false;
   }
-
-  file << text;
-  file.close();
-  vlog_info(VCAT_GENERAL, "Wrote %zu bytes to %s", text.size(), filename.data());
-  return true;
 }
 
 void merge_json(Hjson::Value& base, const Hjson::Value& add, bool overwrite) {
@@ -390,6 +416,25 @@ bool get_member_bool(const Hjson::Value& doc, const std::string& objName, bool& 
     return true;
   } else if (o.type() == Hjson::Value::BOOL) {
     val = o.operator bool();
+    return true;
+  }
+  return false;
+}
+
+bool get_member_bool_relaxed(const Hjson::Value& doc, const std::string& objName, bool& val) {
+  auto o = doc[objName];
+  if (!o.defined()) {
+    return false;
+  }
+
+  if (o.type() == Hjson::Value::STRING) {
+    val = o == std::string("true");
+    return true;
+  } else if (o.type() == Hjson::Value::BOOL) {
+    val = o.operator bool();
+    return true;
+  } else if (o.type() == Hjson::Value::DOUBLE) {
+    val = !(std::floor(o) == 0);
     return true;
   }
   return false;
