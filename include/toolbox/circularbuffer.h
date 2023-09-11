@@ -138,5 +138,5 @@ public:
   }
 
   // Return the maximum size of the buffer.
-  int max_size() const { return CircularBufferBase<T, std::vector<T>>::elems.size(); }
+  size_t max_size() const { return CircularBufferBase<T, std::vector<T>>::elems.size(); }
 };
