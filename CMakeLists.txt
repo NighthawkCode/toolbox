@@ -8,7 +8,7 @@ include(FetchDependency)
 
 fetch_dependency(vlog "https://github.com/Verdant-Robotics/vlog.git" "main")
 fetch_dependency(hjson "https://github.com/Verdant-Robotics/hjson.git" "main")
-fetch_dependency(gtest "https://github.com/google/googletest.git" "8a6feabf04bec8fb125e0df0ad1195c42350725f")
+fetch_dependency(gtest "https://github.com/google/googletest.git" "v1.14.0")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
