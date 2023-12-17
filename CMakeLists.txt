@@ -6,8 +6,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(FetchDependency)
 
-fetch_dependency(vlog "https://github.com/Verdant-Robotics/vlog.git" "main")
-fetch_dependency(hjson "https://github.com/Verdant-Robotics/hjson.git" "main")
+fetch_dependency(vlog "https://github.com/NighthawkCode/vlog.git" "main")
+fetch_dependency(hjson "https://github.com/hjson/hjson-cpp" "2.4.1")
 fetch_dependency(gtest "https://github.com/google/googletest.git" "v1.14.0")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
