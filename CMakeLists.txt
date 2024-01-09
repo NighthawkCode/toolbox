@@ -28,7 +28,6 @@ else()
     -Werror \
     -Wall \
     -Wextra \
-    -Weverything \
     -Werror=return-type \
     -Wno-c++98-compat \
     -Wno-c++98-compat-pedantic \

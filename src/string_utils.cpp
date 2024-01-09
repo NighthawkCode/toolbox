@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cstdarg>
 
 #if __has_include(<format>)
 #include <format>
