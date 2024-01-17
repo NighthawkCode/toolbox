@@ -22,8 +22,6 @@ macro(add_toolbox_test test_name test_cpp)
   endif()
 endmacro()
 
-# https://verdantrobotics-jira.atlassian.net/browse/VC-7069
-# add_toolbox_test(test_datetime_str_parser test_datetime_str_parser.cpp)
 add_toolbox_test(test_lrucache test_lrucache.cpp)
 add_toolbox_test(test_file test_file.cpp)
 add_toolbox_test(test_rate test_rate.cpp)

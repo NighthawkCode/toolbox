@@ -349,7 +349,7 @@ public:
   }
 
   void PrintUsage() {
-    printf("%s (c) Verdant Robotics - %s\n", program_name.c_str(), program_description.c_str());
+    printf("%s (c) Nighthawk Robotics - %s\n", program_name.c_str(), program_description.c_str());
     if (options.size()) {
       printf(" Usage: %s [OPTIONS]", program_name.c_str());
       if (allow_positional) {

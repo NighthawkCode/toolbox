@@ -5,7 +5,7 @@ TEST(TestFileToolbox, FileAccess) {
   EXPECT_TRUE(dir_exists("/home"));
   EXPECT_FALSE(file_exists("/home"));
   // Fie functions do not handle home folder expansion
-  EXPECT_FALSE(dir_exists("~/verdant"));
+  EXPECT_FALSE(dir_exists("~/nighthawk"));
   EXPECT_FALSE(file_exists("~/.bashrc"));
 }
 
